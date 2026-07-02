@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\UniqueConstraint(name: 'UNIQ_HIRAGANA_CHARACTER', fields: ['character'])]
 #[ORM\Entity(repositoryClass: HiraganaRepository::class)]
 class Hiragana
 {
@@ -33,9 +34,16 @@ class Hiragana
     #[ORM\OneToMany(targetEntity: HiraganaGroupMember::class, mappedBy: 'hiragana', orphanRemoval: true)]
     private Collection $hiraganaGroupMembers;
 
+    /**
+     * @var Collection<int, VocabularyHiragana>
+     */
+    #[ORM\OneToMany(targetEntity: VocabularyHiragana::class, mappedBy: 'hiragana', orphanRemoval: true)]
+    private Collection $vocabularyHiraganas;
+
     public function __construct()
     {
         $this->hiraganaGroupMembers = new ArrayCollection();
+        $this->vocabularyHiraganas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -115,6 +123,36 @@ class Hiragana
             // set the owning side to null (unless already changed)
             if ($hiraganaGroupMember->getHiragana() === $this) {
                 $hiraganaGroupMember->setHiragana(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, VocabularyHiragana>
+     */
+    public function getVocabularyHiraganas(): Collection
+    {
+        return $this->vocabularyHiraganas;
+    }
+
+    public function addVocabularyHiragana(VocabularyHiragana $vocabularyHiragana): static
+    {
+        if (!$this->vocabularyHiraganas->contains($vocabularyHiragana)) {
+            $this->vocabularyHiraganas->add($vocabularyHiragana);
+            $vocabularyHiragana->setHiragana($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVocabularyHiragana(VocabularyHiragana $vocabularyHiragana): static
+    {
+        if ($this->vocabularyHiraganas->removeElement($vocabularyHiragana)) {
+            // set the owning side to null (unless already changed)
+            if ($vocabularyHiragana->getHiragana() === $this) {
+                $vocabularyHiragana->setHiragana(null);
             }
         }
 

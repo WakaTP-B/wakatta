@@ -18,6 +18,7 @@ class XpRule
     private ?Activity $activity = null;
 
     #[ORM\ManyToOne(inversedBy: 'xpRules')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Difficulty $difficulty = null;
 
     #[ORM\Column]

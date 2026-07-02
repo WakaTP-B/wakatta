@@ -46,9 +46,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Session::class, mappedBy: 'player')]
     private Collection $sessions;
 
+    /**
+     * @var Collection<int, ActivityLog>
+     */
+    #[ORM\OneToMany(targetEntity: ActivityLog::class, mappedBy: 'player')]
+    private Collection $activityLogs;
+
+    /**
+     * @var Collection<int, XpTransaction>
+     */
+    #[ORM\OneToMany(targetEntity: XpTransaction::class, mappedBy: 'player')]
+    private Collection $xpTransactions;
+
     public function __construct()
     {
         $this->sessions = new ArrayCollection();
+        $this->activityLogs = new ArrayCollection();
+        $this->xpTransactions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -180,6 +194,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($session->getPlayer() === $this) {
                 $session->setPlayer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ActivityLog>
+     */
+    public function getActivityLogs(): Collection
+    {
+        return $this->activityLogs;
+    }
+
+    public function addActivityLog(ActivityLog $activityLog): static
+    {
+        if (!$this->activityLogs->contains($activityLog)) {
+            $this->activityLogs->add($activityLog);
+            $activityLog->setPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivityLog(ActivityLog $activityLog): static
+    {
+        if ($this->activityLogs->removeElement($activityLog)) {
+            // set the owning side to null (unless already changed)
+            if ($activityLog->getPlayer() === $this) {
+                $activityLog->setPlayer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, XpTransaction>
+     */
+    public function getXpTransactions(): Collection
+    {
+        return $this->xpTransactions;
+    }
+
+    public function addXpTransaction(XpTransaction $xpTransaction): static
+    {
+        if (!$this->xpTransactions->contains($xpTransaction)) {
+            $this->xpTransactions->add($xpTransaction);
+            $xpTransaction->setPlayer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeXpTransaction(XpTransaction $xpTransaction): static
+    {
+        if ($this->xpTransactions->removeElement($xpTransaction)) {
+            // set the owning side to null (unless already changed)
+            if ($xpTransaction->getPlayer() === $this) {
+                $xpTransaction->setPlayer(null);
             }
         }
 

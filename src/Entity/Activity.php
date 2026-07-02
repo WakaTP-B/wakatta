@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+#[ORM\UniqueConstraint(name: 'UNIQ_ACTIVITY_NAME', fields: ['name'])]
 #[ORM\Entity(repositoryClass: ActivityRepository::class)]
 class Activity
 {

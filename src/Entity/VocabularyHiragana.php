@@ -20,6 +20,10 @@ class VocabularyHiragana
     #[ORM\Column]
     private ?int $position = null;
 
+    #[ORM\ManyToOne(inversedBy: 'vocabularyHiraganas')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Hiragana $hiragana = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +49,18 @@ class VocabularyHiragana
     public function setPosition(int $position): static
     {
         $this->position = $position;
+
+        return $this;
+    }
+
+    public function getHiragana(): ?Hiragana
+    {
+        return $this->hiragana;
+    }
+
+    public function setHiragana(?Hiragana $hiragana): static
+    {
+        $this->hiragana = $hiragana;
 
         return $this;
     }
