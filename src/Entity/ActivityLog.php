@@ -25,7 +25,7 @@ class ActivityLog
     private ?Vocabulary $vocabulary = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Difficulty $difficulty = null;
 
     #[ORM\ManyToOne(inversedBy: 'activityLogs')]
