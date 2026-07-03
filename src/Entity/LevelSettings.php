@@ -14,7 +14,7 @@ class LevelSettings
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $base_xp = null;
+    private ?int $baseXp = null;
 
     #[ORM\Column]
     private ?int $increment = null;
@@ -26,12 +26,12 @@ class LevelSettings
 
     public function getBaseXp(): ?int
     {
-        return $this->base_xp;
+        return $this->baseXp;
     }
 
-    public function setBaseXp(int $base_xp): static
+    public function setBaseXp(int $baseXp): static
     {
-        $this->base_xp = $base_xp;
+        $this->baseXp = $baseXp;
 
         return $this;
     }

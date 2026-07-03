@@ -26,7 +26,7 @@ class Hiragana
     private ?int $position = null;
 
     #[ORM\Column]
-    private ?int $stroke_count = null;
+    private ?int $strokeCount = null;
 
     /**
      * @var Collection<int, HiraganaGroupMember>
@@ -89,12 +89,12 @@ class Hiragana
 
     public function getStrokeCount(): ?int
     {
-        return $this->stroke_count;
+        return $this->strokeCount;
     }
 
-    public function setStrokeCount(int $stroke_count): static
+    public function setStrokeCount(int $strokeCount): static
     {
-        $this->stroke_count = $stroke_count;
+        $this->strokeCount = $strokeCount;
 
         return $this;
     }

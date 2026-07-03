@@ -20,13 +20,13 @@ class Session
     private ?User $player = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $started_at = null;
+    private ?\DateTimeImmutable $startedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $ended_at = null;
+    private ?\DateTimeImmutable $endedAt = null;
 
     #[ORM\Column(nullable: true)]
-    private ?int $total_xp = null;
+    private ?int $totalXp = null;
 
     /**
      * @var Collection<int, ActivityLog>
@@ -58,36 +58,36 @@ class Session
 
     public function getStartedAt(): ?\DateTimeImmutable
     {
-        return $this->started_at;
+        return $this->startedAt;
     }
 
-    public function setStartedAt(\DateTimeImmutable $started_at): static
+    public function setStartedAt(\DateTimeImmutable $startedAt): static
     {
-        $this->started_at = $started_at;
+        $this->startedAt = $startedAt;
 
         return $this;
     }
 
     public function getEndedAt(): ?\DateTimeImmutable
     {
-        return $this->ended_at;
+        return $this->endedAt;
     }
 
-    public function setEndedAt(\DateTimeImmutable $ended_at): static
+    public function setEndedAt(\DateTimeImmutable $endedAt): static
     {
-        $this->ended_at = $ended_at;
+        $this->endedAt = $endedAt;
 
         return $this;
     }
 
     public function getTotalXp(): ?int
     {
-        return $this->total_xp;
+        return $this->totalXp;
     }
 
-    public function setTotalXp(?int $total_xp): static
+    public function setTotalXp(?int $totalXp): static
     {
-        $this->total_xp = $total_xp;
+        $this->totalXp = $totalXp;
 
         return $this;
     }

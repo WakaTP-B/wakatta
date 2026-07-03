@@ -20,12 +20,12 @@ class Difficulty
     private ?string $name = null;
 
     #[ORM\Column(length: 20)]
-    private ?string $label_jp = null;
+    private ?string $labelJp = null;
 
     /**
      * @var Collection<int, XpRule>
      */
-    #[ORM\OneToMany(targetEntity: XpRule::class, mappedBy: 'difficulty')]
+    #[ORM\OneToMany(targetEntity: XpRule::class, mappedBy: 'difficulty', orphanRemoval: true)]
     private Collection $xpRules;
 
     public function __construct()
@@ -52,12 +52,12 @@ class Difficulty
 
     public function getLabelJp(): ?string
     {
-        return $this->label_jp;
+        return $this->labelJp;
     }
 
-    public function setLabelJp(string $label_jp): static
+    public function setLabelJp(string $labelJp): static
     {
-        $this->label_jp = $label_jp;
+        $this->labelJp = $labelJp;
 
         return $this;
     }

@@ -22,10 +22,10 @@ class XpRule
     private ?Difficulty $difficulty = null;
 
     #[ORM\Column]
-    private ?int $xp_success = null;
+    private ?int $xpSuccess = null;
 
     #[ORM\Column]
-    private ?int $xp_failure = null;
+    private ?int $xpFailure = null;
 
     public function getId(): ?int
     {
@@ -58,24 +58,24 @@ class XpRule
 
     public function getXpSuccess(): ?int
     {
-        return $this->xp_success;
+        return $this->xpSuccess;
     }
 
-    public function setXpSuccess(int $xp_success): static
+    public function setXpSuccess(int $xpSuccess): static
     {
-        $this->xp_success = $xp_success;
+        $this->xpSuccess = $xpSuccess;
 
         return $this;
     }
 
     public function getXpFailure(): ?int
     {
-        return $this->xp_failure;
+        return $this->xpFailure;
     }
 
-    public function setXpFailure(int $xp_failure): static
+    public function setXpFailure(int $xpFailure): static
     {
-        $this->xp_failure = $xp_failure;
+        $this->xpFailure = $xpFailure;
 
         return $this;
     }
