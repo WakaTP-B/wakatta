@@ -1,5 +1,5 @@
 #!/bin/bash
-# ⚠️  Reset de la base de données locale — NE JAMAIS EXÉCUTER EN PRODUCTION
+# ⚠️  Reset de la base de données locale
 
 echo "Reset de la base de données..."
 docker compose down

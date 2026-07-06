@@ -67,6 +67,7 @@ class VocabularyFixtures extends Fixture implements DependentFixtureInterface
             $vocabulary->setDifficulty($difficulty);
 
             $manager->persist($vocabulary);
+            $this->addReference('vocabulary-' . $data['romaji'], $vocabulary);
 
             foreach ($data['parts'] as $position => $romaji) {
                 $vocabularyHiragana = new VocabularyHiragana();

@@ -49,6 +49,7 @@ class ReferenceDataFixtures extends Fixture
             $activity = new Activity();
             $activity->setName($name);
             $manager->persist($activity);
+            $this->addReference('activity-' . $key, $activity);
             $activityEntities[$key] = $activity;
         }
 
