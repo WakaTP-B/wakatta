@@ -20,6 +20,7 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('username', null, [
                 'label' => 'Nom d\'utilisateur',
+                'attr' => ['placeholder' => 'Nom d\'utilisateur...'],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez entrer un nom d\'utilisateur',
@@ -33,7 +34,8 @@ class RegistrationFormType extends AbstractType
             ])
 
             ->add('email', EmailType::class, [
-                'label' => 'Adresse mail',
+                'label' => 'Email',
+                'attr' => ['placeholder' => 'Email...'],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Veuillez entrer une adresse mail',
@@ -51,7 +53,7 @@ class RegistrationFormType extends AbstractType
 
                 'first_options' => [
                     'label' => 'Mot de passe',
-                    'attr' => ['autocomplete' => 'new-password'],
+                    'attr' => ['autocomplete' => 'new-password', 'placeholder' => 'Mot de passe...'],
                     'constraints' => [
                         new NotBlank(message: 'Veuillez entrer un mot de passe'),
                         new Length(
@@ -63,7 +65,7 @@ class RegistrationFormType extends AbstractType
                 ],
                 'second_options' => [
                     'label' => 'Confirmer le mot de passe',
-                    'attr' => ['autocomplete' => 'new-password'],
+                    'attr' => ['autocomplete' => 'new-password', 'placeholder' => 'Confirmer le mot de passe...'],
                 ],
             ])
         ;
