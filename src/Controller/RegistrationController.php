@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -21,6 +22,7 @@ class RegistrationController extends AbstractController
         UserPasswordHasherInterface $userPasswordHasher,
         EntityManagerInterface $entityManager,
         UserAuthenticatorInterface $userAuthenticator,
+        #[Autowire(service: 'security.authenticator.form_login.main')]
         FormLoginAuthenticator $formLoginAuthenticator
     ): Response {
         $user = new User();
@@ -31,8 +33,10 @@ class RegistrationController extends AbstractController
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
+            // Hash password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+
+            $user->setCreatedAt(new \DateTimeImmutable());
 
             $entityManager->persist($user);
             $entityManager->flush();
