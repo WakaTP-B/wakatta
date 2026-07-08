@@ -27,6 +27,23 @@ services:
       - host.docker.internal:host-gateway
     tty: true
     user: "1000:1000"
+  tailwind:
+    image: ${IMAGES_PREFIX:-}app-php-dev
+    build:
+      context: .
+      target: frankenphp_dev
+    volumes:
+      - ./:/app
+    working_dir: /app
+    user: "1000:1000"
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost}, php:80
+      DEFAULT_URI: https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}
+      APP_ENV: "${APP_ENV:-dev}"
+    command: php bin/console tailwind:build --watch
+    depends_on:
+      - php
+
 ###> symfony/mercure-bundle ###
 ###< symfony/mercure-bundle ###
 
