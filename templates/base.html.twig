@@ -26,6 +26,17 @@
 		{% endif %}
 	</head>
 	<body>
-		{% block body %}{% endblock %}
+
+		<header>
+			{% if app.user %}
+				<span>{{ app.user.username }}</span>
+				<a href="{{ path('app_logout') }}">Déconnexion</a>
+			{% endif %}
+		</header>
+
+		<div>
+			{% block body %}{% endblock %}
+		</div>
+		
 	</body>
 </html>
