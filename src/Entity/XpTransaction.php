@@ -14,11 +14,11 @@ class XpTransaction
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'xpTransactions')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $player = null;
 
     #[ORM\OneToOne(inversedBy: 'xpTransaction', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?ActivityLog $activityLog = null;
 
     #[ORM\Column]
