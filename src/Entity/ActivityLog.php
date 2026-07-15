@@ -29,6 +29,7 @@ class ActivityLog
     private ?Difficulty $difficulty = null;
 
     #[ORM\ManyToOne(inversedBy: 'activityLogs')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Session $session = null;
 
     #[ORM\OneToOne(mappedBy: 'activityLog', cascade: ['persist', 'remove'])]

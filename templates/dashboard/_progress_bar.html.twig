@@ -1,0 +1,11 @@
+<div class="flex items-center gap-2">
+    <span class="text-xs font-semibold text-white bg-rouge-torii px-2 py-0.5 rounded whitespace-nowrap">
+        {{ label }}
+    </span>
+    <div class="flex-1 h-3 bg-gris-pierre rounded-full overflow-hidden">
+        <div class="h-full bg-rouge-torii" style="width: {{ percent }}%"></div>
+    </div>
+    <span class="text-xs text-encre whitespace-nowrap">
+        {{ current }}/{{ needed }} EXP
+    </span>
+</div>
