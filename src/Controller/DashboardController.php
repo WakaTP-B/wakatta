@@ -14,13 +14,12 @@ final class DashboardController extends AbstractController
 {
     /**
      * Mapping "nom en base" -> "libellé affiché" + "route du module".
-     * route = null if not route
      */
     private const MODULE_LABELS = [
-        'QCM Vocabulaire' => ['label' => 'Vocabulaire', 'route' => null],
-        'Hiragana Calligraphie' => ['label' => 'Hiragana - Calligraphie', 'route' => null],
-        'Hiragana Complétion' => ['label' => 'Hiragana - Complétion', 'route' => null],
-        'Hiragana Assemblage' => ['label' => 'Hiragana - Assemblage', 'route' => null],
+        'QCM Vocabulaire' => ['label' => 'Vocabulaire', 'route' => 'app_activity_vocabulaire'],
+        'Hiragana Calligraphie' => ['label' => 'Hiragana - Calligraphie', 'route' => 'app_activity_calligraphie'],
+        'Hiragana Complétion' => ['label' => 'Hiragana - Complétion', 'route' => 'app_activity_completion'],
+        'Hiragana Assemblage' => ['label' => 'Hiragana - Assemblage', 'route' => 'app_activity_assemblage'],
     ];
 
     #[Route('/dashboard', name: 'app_dashboard')]

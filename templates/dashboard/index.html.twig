@@ -1,41 +1,45 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Dashboard - Wakatta!{% endblock %}
+{% block title %}
+	Dashboard - Wakatta!
+{% endblock %}
 
 {% block body %}
-<div class="px-4 pt-6 pb-10">
+	<div class="px-4 pt-6 pb-10">
 
-    <h1 class="titre-page mb-6">
-        ようこそ、{{ app.user.username }}
-    </h1>
+		<h1 class="titre-page mb-6">
+			ようこそ、{{ app.user.username }}
+		</h1>
 
-    <section class="mb-8">
-        <h2 class="titre-section mb-2">Progression globale</h2>
-        {% include 'dashboard/_progress_bar.html.twig' with {
+		<section class="mb-8">
+			<h2 class="titre-section mb-2">Progression globale</h2>
+			{% include 'dashboard/_progress_bar.html.twig' with {
             label: 'Niveau ' ~ globalProgression.level,
             current: globalProgression.xpCurrentLevel,
             needed: globalProgression.xpNextLevel,
             percent: globalProgression.percent
         } %}
-    </section>
+		</section>
 
-    <section class="space-y-4">
-        {% for module in modules %}
-            <div class="bg-white rounded-lg overflow-hidden shadow-sm border border-gris-pierre">
-                <div class="h-32 bg-gris-pierre flex items-center justify-center text-encre/40 text-sm">
-                    Image du module
-                </div>
-                <div class="p-4">
-                    <h3 class="font-semibold text-encre mb-2">{{ module.label }}</h3>
-                    {% include 'dashboard/_progress_bar.html.twig' with {
+		<section class="space-y-4">
+			{% for module in modules %}
+				<a href="{{ path(module.route) }}" class="block bg-white rounded-lg overflow-hidden shadow-sm border border-gris-pierre">
+					<div class="bg-white rounded-lg overflow-hidden shadow-sm border border-gris-pierre">
+						<div class="h-32 bg-gris-pierre flex items-center justify-center text-encre/40 text-sm">
+							Image du module
+						</div>
+						<div class="p-4">
+							<h3 class="font-semibold text-encre mb-2">{{ module.label }}</h3>
+							{% include 'dashboard/_progress_bar.html.twig' with {
                         label: 'Niv. ' ~ module.progression.level,
                         current: module.progression.xpCurrentLevel,
                         needed: module.progression.xpNextLevel,
                         percent: module.progression.percent
                     } %}
-                </div>
-            </div>
-        {% endfor %}
-    </section>
-</div>
+						</div>
+					</div>
+				</a>
+			{% endfor %}
+		</section>
+	</div>
 {% endblock %}
