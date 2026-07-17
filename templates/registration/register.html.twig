@@ -1,5 +1,7 @@
 {% extends 'base_auth.html.twig' %}
 
+{% form_theme registrationForm 'form/fields.html.twig' %}
+
 {% block title %}
 	Inscription
 {% endblock %}
@@ -9,7 +11,7 @@
 
 	{{ form_errors(registrationForm) }}
 
-	{{ form_start(registrationForm) }}
+	{{ form_start(registrationForm, {attr: {class: 'w-full max-w-xs'}}) }}
 
 	{{ form_row(registrationForm.username) }}
 	{{ form_row(registrationForm.email) }}
@@ -19,7 +21,14 @@
 	{# Champs non déclarés + hidden #}
 	{{ form_rest(registrationForm) }}
 
-	<button type="submit" class="btn">Register</button>
+	<div class="w-full max-w-sm flex justify-center pt-4">
+		<button type="submit" class="btn">Valider</button>
+	</div>
 	{{ form_end(registrationForm) }}
-    
+
+	<p class="text-sm text-encre mt-4 text-center">
+		Déjà un compte ?
+		<a href="{{ path('app_login') }}" class="block text-rouge-torii font-bold">Se connecter</a>
+	</p>
+
 {% endblock %}

@@ -7,19 +7,32 @@
 {% block body %}
 	<h1 class="titre-page">Connexion</h1>
 
+	<form method="post" class="w-full max-w-xs">
 
-	<form method="post">
-		<label for="email">Email</label>
-		<input type="email" id="email" name="_username" value="{{ last_username }}" autocomplete="email" required autofocus placeholder="Email...">
+		<div class="mb-3 w-full">
+			<label for="email" class="label-form">Email</label>
+			<input type="email" id="email" name="_username" value="{{ last_username }}" autocomplete="email" required autofocus placeholder="Email..." class="input-form">
+		</div>
 
-		<label for="password">Mot de passe</label>
-		<input type="password" id="password" name="_password" autocomplete="current-password" required placeholder="Mot de passe...">
+		<div class="mb-2.5 w-full">
+			<label for="password" class="label-form">Mot de passe</label>
+			<input type="password" id="password" name="_password" autocomplete="current-password" required placeholder="Mot de passe..." class="input-form">
+		</div>
 
 		<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
 		{% if error %}
-			<div class="error">Email ou mot de passe incorrect.</div>
+			<div class="error text-rouge-torii text-sm mb-3">Email ou mot de passe incorrect.</div>
 		{% endif %}
 
-		<button type="submit" class="btn">Se connecter</button>
+		<div class="w-full max-w-xs flex justify-center mt-8">
+			<button type="submit" class="btn">Se connecter</button>
+		</div>
+
 	</form>
+
+	<p class="text-sm text-encre mt-4 text-center">
+		Pas encore de compte ?
+		<a href="{{ path('app_register') }}" class="block text-rouge-torii font-bold">S'inscrire</a>
+	</p>
 {% endblock %}
