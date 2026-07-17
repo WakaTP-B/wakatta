@@ -54,7 +54,7 @@
   .titre-page {
     font-family: var(--font-title);
     color: var(--color-bleu-aiiro);
-    @apply text-3xl font-bold;
+    @apply text-3xl font-bold mb-6;
   }
 
   .titre-section {
@@ -64,6 +64,14 @@
   }
 
   .btn {
-    @apply bg-rouge-torii text-white px-4 py-2 rounded-lg font-medium;
+    @apply bg-rouge-torii text-white px-6 py-2 rounded-lg font-medium;
+  }
+
+  .input-form {
+    @apply w-full bg-beige-washi border-2 border-bleu-aiiro rounded-lg px-4 py-3 text-encre text-sm placeholder-encre/40;
+  }
+
+  .label-form {
+    @apply block text-encre text-sm mb-1;
   }
 }

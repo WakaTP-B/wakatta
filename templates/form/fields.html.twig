@@ -1,0 +1,22 @@
+{% use 'form_div_layout.html.twig' %}
+
+{% block form_row %}
+	<div class="mb-3 w-full">
+		{{ form_label(form) }}
+		{{ form_widget(form) }}
+		{{ form_errors(form) }}
+	</div>
+{% endblock %}
+
+{% block form_label %}
+	{% if label is not same as(false) %}
+		<label class="label-form">
+			{{ label|trans(label_translation_parameters, translation_domain) }}
+		</label>
+	{% endif %}
+{% endblock %}
+
+{% block form_widget_simple %}
+	{% set attr = attr|merge({class: (attr.class|default('') ~ ' input-form')|trim}) %}
+	{{ parent() }}
+{% endblock %}
