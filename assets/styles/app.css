@@ -43,7 +43,21 @@
 }
 
 @layer base {
+
+  /* Hide scrollbars */
+  /* Firefox Edge/IE legacy */
+  html {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* Chrome, Safari, navigateurs Chromium */
+  html::-webkit-scrollbar {
+    display: none;
+  }
+
   body {
+
     font-family: var(--font-sans);
     color: var(--color-encre);
     background-color: var(--color-beige-washi);

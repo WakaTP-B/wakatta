@@ -1,0 +1,30 @@
+{# Backdrop #}
+<div data-menu-target="backdrop" data-action="click->menu#close" class="hidden fixed inset-0 bg-encre/50 z-40"></div>
+
+{# Drawer #}
+<div data-menu-target="drawer" class="hidden fixed top-16 left-1/2 -translate-x-1/2 w-full max-w-sm bg-beige-washi z-50 flex flex-col pb-4 -translate-y-4 opacity-0 transition-all duration-500">
+
+
+	<nav class="flex flex-col gap-2 px-4 pt-4">
+
+		<a href="{{ path('app_dashboard') }}" class="h-[49px] flex items-center justify-center text-encre font-bold">
+			Dashboard
+		</a>
+
+		<a href="#" class="h-[49px] flex items-center justify-center text-encre font-bold">
+			Alphabet Hiragana
+		</a>
+
+		<a href="#" class="h-[49px] flex items-center justify-center text-encre font-bold">
+			Profil
+		</a>
+
+	</nav>
+
+
+	<a href="{{ path('app_logout') }}" class="h-[49px] flex items-center justify-center text-rouge-torii mt-8 px-4 font-bold">
+		Déconnexion
+	</a>
+
+
+</div>
