@@ -16,28 +16,24 @@ class VocabularyRepository extends ServiceEntityRepository
         parent::__construct($registry, Vocabulary::class);
     }
 
-    //    /**
-    //     * @return Vocabulary[] Returns an array of Vocabulary objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('v')
-    //            ->andWhere('v.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('v.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Récupère un Vocabulary random par Difficulty
+     *
+     * @param string $difficultyName 'facile' | 'moyen' | 'difficile'
+     */
+    public function findVocabularyByDifficulty(string $difficultyName): ?Vocabulary
+    {
+        $vocabularies = $this->createQueryBuilder('v')
+            ->join('v.difficulty', 'd')
+            ->andWhere('d.name = :difficultyName')
+            ->setParameter('difficultyName', $difficultyName)
+            ->getQuery()
+            ->getResult();
 
-    //    public function findOneBySomeField($value): ?Vocabulary
-    //    {
-    //        return $this->createQueryBuilder('v')
-    //            ->andWhere('v.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if (empty($vocabularies)) {
+            return null;
+        }
+
+        return $vocabularies[array_rand($vocabularies)];
+    }
 }
