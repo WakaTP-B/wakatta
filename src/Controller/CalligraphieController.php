@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Repository\HiraganaRepository;
+use App\Service\CalligraphieEvaluator;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -68,5 +70,33 @@ final class CalligraphieController extends AbstractController
         return $this->render('activity/calligraphie/practice.html.twig', [
             'hiragana' => $hiragana,
         ]);
+    }
+
+    #[Route('/hiragana/calligraphie/evaluation', name: 'app_activity_calligraphie_evaluation')]
+    #[IsGranted('ROLE_USER')]
+    public function evaluation(Request $request, HiraganaRepository $hiraganaRepository): Response
+    {
+        $romaji = $request->query->get('hiragana');
+        $hiragana = $romaji ? $hiraganaRepository->findOneBy(['romaji' => $romaji]) : null;
+
+        if (!$hiragana) {
+            $this->addFlash('error', 'Merci de choisir un hiragana à pratiquer.');
+
+            return $this->redirectToRoute('app_activity_calligraphie');
+        }
+
+        return $this->render('activity/calligraphie/evaluation.html.twig', [
+            'hiragana' => $hiragana,
+        ]);
+    }
+
+    #[Route('/hiragana/calligraphie/evaluation/reponse', name: 'app_activity_calligraphie_evaluation_reponse', methods: ['POST'])]
+    #[IsGranted('ROLE_USER')]
+    public function evaluationReponse(Request $request, CalligraphieEvaluator $calligraphieEvaluator): JsonResponse
+    {
+        $result = $request->request->get('result');
+        $xpAmount = $calligraphieEvaluator->evaluate($this->getUser(), $result);
+
+        return $this->json(['xpAmount' => $xpAmount]);
     }
 }

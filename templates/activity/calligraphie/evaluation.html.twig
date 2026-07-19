@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Auto-évaluation - Wakatta!
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+
+{% block body %}
+	<p class="text-encre/50 text-sm font-semibold uppercase tracking-wide mb-1">Hiragana</p>
+	<h1 class="titre-page">Auto-évaluation</h1>
+
+	<div class="flex flex-col items-center" data-controller="calligraphie-eval" data-calligraphie-eval-svg-url-value="{{ asset('animcjk/' ~ hiragana.romaji ~ '.svg') }}" data-calligraphie-eval-romaji-value="{{ hiragana.romaji }}">
+
+		<h2 class="titre-page">{{ hiragana.character }}
+			<span class="text-xl text-encre/60">({{ hiragana.romaji }})</span>
+		</h2>
+
+		<div class="flex flex-col items-center" data-controller="calligraphie-eval" data-calligraphie-eval-svg-url-value="{{ asset('animcjk/' ~ hiragana.romaji ~ '.svg') }}" data-calligraphie-eval-romaji-value="{{ hiragana.romaji }}">
+
+			<div class="relative rounded-lg border border-gris-pierre" style="width: 320px; height: 320px; background-color: white; background-image: repeating-linear-gradient(0deg, #D9D4CC 0 1px, transparent 1px 40px), repeating-linear-gradient(90deg, #D9D4CC 0 1px, transparent 1px 40px);">
+				<div data-calligraphie-eval-target="animationContainer" class="absolute inset-0" style="opacity: 0.4;"></div>
+				<img data-calligraphie-eval-target="drawing" class="absolute inset-0" style="width: 320px; height: 320px;" alt="Votre dessin">
+			</div>
+
+			{# Toolbar #}
+			<div style="width: 320px;" class="mt-6">
+				{% include 'components/_toolbar.html.twig' with {
+                buttons: [
+                    {icon: 'moyen', action: 'calligraphie-eval#evaluate', label: 'Moyen', param: 'moyen'},
+                    {icon: 'rate', action: 'calligraphie-eval#evaluate', label: 'Raté', param: 'rate'},
+                    {icon: 'reussi', action: 'calligraphie-eval#evaluate', label: 'Réussi', param: 'reussi'},],
+                    }%}
+			</div>
+			<div data-calligraphie-eval-target="modal" class="hidden fixed inset-0 bg-encre/50 z-40 flex items-center justify-center">
+				<div class="bg-beige-washi border-2 border-bleu-aiiro rounded-lg p-6 text-center w-80">
+					<p data-calligraphie-eval-target="modalMessage" class="font-semibold mb-2"></p>
+					<p data-calligraphie-eval-target="modalXp" class="text-sm text-encre/60 mb-6"></p>
+					<div class="space-y-3">
+						<a href="{{ path('app_activity_calligraphie') }}" class="btn w-full block">Retour à la sélection</a>
+						<a href="{{ path('app_dashboard') }}" class="block w-full text-center border-2 border-bleu-aiiro rounded-lg py-2 text-encre">Retour au dashboard</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	{% endblock %}
