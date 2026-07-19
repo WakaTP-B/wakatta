@@ -6,9 +6,13 @@ export default class extends Controller {
     static values = { svgUrl: String, romaji: String }
 
     connect() {
+    if (this.hasAnimationContainerTarget) {
         this.loadAnimation()
+    }
+    if (this.hasDrawingTarget) {
         this.loadDrawing()
     }
+}
 
     loadAnimation() {
         fetch(this.svgUrlValue)
