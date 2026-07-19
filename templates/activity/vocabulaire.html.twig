@@ -7,8 +7,15 @@
 	<div class="px-4 pb-10 pt-4 w-full max-w-sm" data-controller="qcm">
 		<h1 class="titre-page">Vocabulaire</h1>
 
-		<p class="text-center text-encre/60 text-sm mb-4">{{ questionNumber }}
-			/ 10</p>
+		<div class="mb-4">
+			{% include 'dashboard/_progress_bar.html.twig' with {
+        label: 'Question',
+        current: questionNumber,
+        needed: 10,
+        percent: (questionNumber / 10 * 100),
+        suffix: ''
+    } %}
+		</div>
 
 		<div class="bg-white rounded-lg shadow-sm border border-gris-pierre p-6 text-center mb-6">
 			{% if question.difficulty.value == 'facile' %}
