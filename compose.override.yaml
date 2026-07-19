@@ -41,6 +41,8 @@ services:
       DEFAULT_URI: https://${SERVER_NAME:-localhost}:${HTTPS_PORT:-443}
       APP_ENV: "${APP_ENV:-dev}"
     command: php bin/console tailwind:build --watch
+    healthcheck:
+      disable: true
     depends_on:
       - php
 

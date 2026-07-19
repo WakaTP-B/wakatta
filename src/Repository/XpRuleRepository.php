@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Entity\Activity;
+use App\Entity\Difficulty;
 use App\Entity\XpRule;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,28 +18,14 @@ class XpRuleRepository extends ServiceEntityRepository
         parent::__construct($registry, XpRule::class);
     }
 
-    //    /**
-    //     * @return XpRule[] Returns an array of XpRule objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('x')
-    //            ->andWhere('x.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('x.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?XpRule
-    //    {
-    //        return $this->createQueryBuilder('x')
-    //            ->andWhere('x.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    /**
+     * Récupère XpRule pour Activity et Difficulty selected
+     */
+    public function findByActivityAndDifficulty(Activity $activity, Difficulty $difficulty): ?XpRule
+    {
+        return $this->findOneBy([
+            'activity' => $activity,
+            'difficulty' => $difficulty,
+        ]);
+    }
 }

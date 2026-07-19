@@ -16,28 +16,20 @@ class HiraganaRepository extends ServiceEntityRepository
         parent::__construct($registry, Hiragana::class);
     }
 
-    //    /**
-    //     * @return Hiragana[] Returns an array of Hiragana objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('h')
-    //            ->andWhere('h.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('h.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Retourne tous les hiragana indexés par romaji, pour lookup facile dans le tableau gojūon.
+     *
+     * @return array<string, Hiragana>
+     */
+    public function findAllIndexedByRomaji(): array
+    {
+        $hiraganas = $this->findAll();
+        $indexed = [];
 
-    //    public function findOneBySomeField($value): ?Hiragana
-    //    {
-    //        return $this->createQueryBuilder('h')
-    //            ->andWhere('h.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        foreach ($hiraganas as $hiragana) {
+            $indexed[$hiragana->getRomaji()] = $hiragana;
+        }
+
+        return $indexed;
+    }
 }

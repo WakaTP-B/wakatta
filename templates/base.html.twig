@@ -2,41 +2,72 @@
 <html>
 	<head>
 		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
 		<title>
 			{% block title %}
-				Welcome!
+				Wakatta!
 			{% endblock %}
 		</title>
-		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+
+		<link rel="icon" type="image/png" href="{{ asset('images/Wakatta_Mini.png') }}">
+
 		{% block stylesheets %}
 			<link rel="stylesheet" href="{{ asset('styles/app.css') }}">
 		{% endblock %}
 
+		{# JS (Stimulus/Turbo) via AssetMapper #}
 		{% block javascripts %}
 			{% block importmap %}
 				{{ importmap('app') }}
 			{% endblock %}
 		{% endblock %}
 
+		{# Hot reload FrankenPHP #}
 		{% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
 		{% if frankenphpHotReload %}
 			<meta name="frankenphp-hot-reload:url" content="{{ frankenphpHotReload }}">
-		 <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
-			 <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
+		 	<script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
+			<script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
 		{% endif %}
 	</head>
-	<body>
+	<body data-controller="menu">
 
-		<header>
-			{% if app.user %}
-				<span>{{ app.user.username }}</span>
-				<a href="{{ path('app_logout') }}">Déconnexion</a>
-			{% endif %}
+		<header
+			class="fixed top-0 left-0 right-0 h-16 bg-gris-pierre border-b border-encre/10 flex items-center justify-between px-4 z-50">
+
+			{# Logo Wakatta redirect to dashboard #}
+			<a href="{{ path('app_dashboard') }}">
+				<img src="{{ asset('images/Wakatta_Mini.png') }}" alt="Wakatta!" class="h-10 w-10 rounded-full">
+			</a>
+
+			{# Burger menu Stimulus #}
+			<button
+				type="button" aria-label="Menu" data-action="click->menu#toggle" class="text-encre">
+
+				{# Icone burger Open #}
+				<svg data-menu-target="iconOpen" width="24" height="24" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+					<line x1="3" y1="6" x2="21" y2="6"/>
+					<line x1="3" y1="12" x2="21" y2="12"/>
+					<line x1="3" y1="18" x2="21" y2="18"/>
+				</svg>
+
+				{# Icone burger Close #}
+				<svg data-menu-target="iconClose" class="hidden" width="28" height="28" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+					<line x1="6" y1="6" x2="18" y2="18"/>
+					<line x1="18" y1="6" x2="6" y2="18"/>
+				</svg>
+
+			</button>
+
 		</header>
 
-		<div>
-			{% block body %}{% endblock %}
+		<div class="pt-16">
+			<div class="px-4 pt-4 pb-10">
+			 	{% block body %}{% endblock %}
+			</div>
 		</div>
-		
-	</body>
-</html>
+
+			{% include '_menu_drawer.html.twig' %}
+		</body>
+	</html>

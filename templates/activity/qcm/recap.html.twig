@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Récapitulatif - Wakatta!
+{% endblock %}
+
+{% block body %}
+    <div class="px-4 pt-4 w-full max-w-sm text-center">
+
+        <p class="titre-page mb-4">Partie terminée !</p>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gris-pierre p-6 mb-6">
+            <p class="text-encre mb-2">
+                <span class="font-bold text-2xl">{{ successCount }}</span> / 5 bonnes réponses
+            </p>
+
+            <p class="text-sm text-encre/60">
+                {% if totalXp >= 0 %}+{{ totalXp }}{% else %}{{ totalXp }}{% endif %} XP au total
+            </p>
+        </div>
+
+        <div class="space-y-3">
+            <a href="{{ path('app_activity_vocabulaire', {level: difficulty.value}) }}" class="btn w-full block">
+                Rejouer
+            </a>
+
+            <a href="{{ path('app_dashboard') }}" class="block w-full text-center border-2 border-bleu-aiiro rounded-lg py-2 text-encre">
+                Retour au dashboard
+            </a>
+        </div>
+
+    </div>
+{% endblock %}

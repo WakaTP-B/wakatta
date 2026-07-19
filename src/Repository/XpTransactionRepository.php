@@ -3,6 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\XpTransaction;
+use App\Entity\User;
+use App\Entity\Activity;
+use App\Entity\Session;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +19,37 @@ class XpTransactionRepository extends ServiceEntityRepository
         parent::__construct($registry, XpTransaction::class);
     }
 
-    //    /**
-    //     * @return XpTransaction[] Returns an array of XpTransaction objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('x')
-    //            ->andWhere('x.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('x.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function getTotalXpForUser(User $user): int
+    {
+        return (int) $this->createQueryBuilder('xt')
+            ->select('COALESCE(SUM(xt.amount), 0)')
+            ->where('xt.player = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
-    //    public function findOneBySomeField($value): ?XpTransaction
-    //    {
-    //        return $this->createQueryBuilder('x')
-    //            ->andWhere('x.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function getTotalXpActivityForUser(User $user, Activity $activity): int
+    {
+        return (int) $this->createQueryBuilder('xt')
+            ->select('COALESCE(SUM(xt.amount), 0)')
+            ->join('xt.activityLog', 'al')
+            ->where('xt.player = :user')
+            ->andWhere('al.activity = :activity')
+            ->setParameter('user', $user)
+            ->setParameter('activity', $activity)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getTotalXpForSession(Session $session): int
+    {
+        return (int) $this->createQueryBuilder('xt')
+            ->select('COALESCE(SUM(xt.amount), 0)')
+            ->join('xt.activityLog', 'al')
+            ->where('al.session = :session')
+            ->setParameter('session', $session)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }
