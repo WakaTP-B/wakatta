@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hiragana - Calligraphie - Wakatta!
+{% block title %}
+	Hiragana - Calligraphie - Wakatta!
 {% endblock %}
 
 {% block stylesheets %}
@@ -20,11 +21,11 @@
 		</a>
 	</div>
 	<h1 class="titre-page">Calligraphie</h1>
-	<div class="flex flex-col items-center" data-controller="calligraphie" data-calligraphie-romaji-value="{{ hiragana.romaji }}" data-calligraphie-svg-url-value="{{ asset('animcjk/' ~ hiragana.romaji ~ '.svg') }}">
+	<div class="flex flex-col items-center" data-controller="calligraphie" data-calligraphie-romaji-value="{{ hiragana.romaji }}" data-calligraphie-svg-url-value="{{ asset('animcjk/' ~ hiragana.romaji ~ '.svg') }}" data-calligraphie-evaluation-url-value="{{ path('app_activity_calligraphie_evaluation', {hiragana: hiragana.romaji}) }}">
 
-		<h1 class="titre-page">{{ hiragana.character }}
+		<h2 class="titre-page">{{ hiragana.character }}
 			<span class="text-xl text-encre/60">({{ hiragana.romaji }})</span>
-		</h1>
+		</h2>
 
 		{# Zone de tracé : le SVG animé et le canvas de dessin sont superposés #}
 		<div class="relative rounded-lg border border-gris-pierre" style="width: 320px; height: 320px; background-color: white; background-image: repeating-linear-gradient(0deg, #D9D4CC 0 1px, transparent 1px 40px), repeating-linear-gradient(90deg, #D9D4CC 0 1px, transparent 1px 40px);">
@@ -46,4 +47,4 @@
     } %}
 		</div>
 	</div>
-</div>{% endblock %}
+{% endblock %}

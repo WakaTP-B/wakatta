@@ -3,7 +3,7 @@ import { Controller } from '@hotwired/stimulus';
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['animationContainer', 'canvas']
-    static values = { svgUrl: String }
+    static values = { romaji: String, svgUrl: String, evaluationUrl: String }
 
     // Historique des traits dessinés, pour Annuler/Rétablir
     strokes = []
@@ -110,4 +110,11 @@ export default class extends Controller {
             y: event.clientY - rect.top,
         }
     }
+
+    validate() {
+    // Save le dessin dans SessionStorage pour l'auto-éval
+    const drawingImage = this.canvasTarget.toDataURL('image/png')
+    sessionStorage.setItem('calligraphie_drawing', drawingImage)
+    window.location.href = this.evaluationUrlValue
+}
 }
