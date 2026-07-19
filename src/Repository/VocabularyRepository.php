@@ -17,18 +17,25 @@ class VocabularyRepository extends ServiceEntityRepository
     }
 
     /**
-     * Récupère un Vocabulary random par Difficulty
+     * Récupère un Vocabulary aléatoire par Difficulty.
+     * $excludeIds permet d'éviter de retirer un mot déjà tombé dans la série en cours.
      *
-     * @param string $difficultyName 'facile' | 'moyen' | 'difficile'
+     * @param int[] $excludeIds
+     * @return Vocabulary|null Null si aucun mot n'existe pour cette difficulté
      */
-    public function findVocabularyByDifficulty(string $difficultyName): ?Vocabulary
+    public function findVocabularyByDifficulty(string $difficultyName, array $excludeIds = []): ?Vocabulary
     {
-        $vocabularies = $this->createQueryBuilder('v')
+        $queryBuilder = $this->createQueryBuilder('v')
             ->join('v.difficulty', 'd')
             ->andWhere('d.name = :difficultyName')
-            ->setParameter('difficultyName', $difficultyName)
-            ->getQuery()
-            ->getResult();
+            ->setParameter('difficultyName', $difficultyName);
+
+        if (!empty($excludeIds)) {
+            $queryBuilder->andWhere('v.id NOT IN (:excludeIds)')
+                ->setParameter('excludeIds', $excludeIds);
+        }
+
+        $vocabularies = $queryBuilder->getQuery()->getResult();
 
         if (empty($vocabularies)) {
             return null;
@@ -37,6 +44,7 @@ class VocabularyRepository extends ServiceEntityRepository
         return $vocabularies[array_rand($vocabularies)];
     }
 
+    
     /**
      * Récupère un Vocabulary random pour distracteurs
      * Exclue mot correct

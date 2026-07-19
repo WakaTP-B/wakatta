@@ -13,9 +13,9 @@ final class QcmGenerator
         private readonly VocabularyRepository $vocabularyRepository,
     ) {}
 
-    public function generateQuestion(DifficultyLevel $difficulty): ?QcmQuestion
+    public function generateQuestion(DifficultyLevel $difficulty, array $excludedVocabularyIds = []): ?QcmQuestion
     {
-        $vocabulary = $this->vocabularyRepository->findVocabularyByDifficulty($difficulty->value);
+        $vocabulary = $this->vocabularyRepository->findVocabularyByDifficulty($difficulty->value, $excludedVocabularyIds);
 
         if (!$vocabulary) {
             return null;
@@ -54,6 +54,26 @@ final class QcmGenerator
             difficulty: $difficulty,
             choices: $choices,
             correctAnswer: $vocabulary->getHiragana(),
+        );
+    }
+
+    /**
+     * Reconstruit une question à partir d'une liste de choix déjà fixée
+     * (utilisé au rechargement de page, pour que les distracteurs ne changent pas - sinon un joueur pourrait repérer la bonne réponse en comparant plusieurs reloads).
+     *
+     * @param string[] $choices
+     */
+    public function buildQuestionFromFixedChoices(Vocabulary $vocabulary, DifficultyLevel $difficulty, array $choices): QcmQuestion
+    {
+        $correctAnswer = $difficulty === DifficultyLevel::FACILE
+            ? $vocabulary->getFrench()
+            : $vocabulary->getHiragana();
+
+        return new QcmQuestion(
+            vocabulary: $vocabulary,
+            difficulty: $difficulty,
+            choices: $choices,
+            correctAnswer: $correctAnswer,
         );
     }
 }

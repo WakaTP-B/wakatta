@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\XpTransaction;
 use App\Entity\User;
 use App\Entity\Activity;
+use App\Entity\Session;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,6 +38,17 @@ class XpTransactionRepository extends ServiceEntityRepository
             ->andWhere('al.activity = :activity')
             ->setParameter('user', $user)
             ->setParameter('activity', $activity)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function getTotalXpForSession(Session $session): int
+    {
+        return (int) $this->createQueryBuilder('xt')
+            ->select('COALESCE(SUM(xt.amount), 0)')
+            ->join('xt.activityLog', 'al')
+            ->where('al.session = :session')
+            ->setParameter('session', $session)
             ->getQuery()
             ->getSingleScalarResult();
     }

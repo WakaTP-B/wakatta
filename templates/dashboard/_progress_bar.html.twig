@@ -1,8 +1,18 @@
-<div class="flex items-center gap-2">
-	<span class="text-xs font-semibold text-white bg-rouge-torii px-2 py-0.5 rounded whitespace-nowrap">
+<div class="mb-1 flex items-center justify-between">
+	<span class="text-xs font-semibold text-white {{ color|default('bg-rouge-torii') }} px-2 py-0.5 rounded whitespace-nowrap">
 		{{ label }}
 	</span>
-	<div class="flex-1 h-3 bg-gris-pierre rounded-full overflow-hidden">
-		<div class="h-full bg-rouge-torii" style="width: {{ percent }}%"></div>
-	</div>
+	<span class="whitespace-nowrap">
+		<span class="text-base font-bold {{ textColor|default('text-rouge-torii') }}">{{ current }}</span>
+		<span class="text-xs text-encre">/{{ needed }}
+			{% if suffix is defined %}
+				{{ suffix }}
+			{% else %}
+				EXP
+			{% endif %}
+		</span>
+	</span>
+</div>
+<div class="h-3 bg-gris-pierre rounded-full overflow-hidden">
+	<div class="h-full {{ color|default('bg-rouge-torii') }}" style="width: {{ percent }}%"></div>
 </div>

@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-    static targets = ['choice', 'submitBtn']
+    static targets = ['choice', 'submitBtn', 'answerInput']
 
     selectedValue = null
 
@@ -18,6 +18,8 @@ export default class extends Controller {
             this.markAsSelected(clickedButton)
             this.selectedValue = clickedValue
         }
+
+        this.answerInputTarget.value = this.selectedValue ?? ''
 
         this.updateSubmitButtonState()
     }

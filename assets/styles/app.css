@@ -44,9 +44,9 @@
 
 @layer base {
 
-  /* Hide scrollbars */
-  /* Firefox Edge/IE legacy */
+  /* Hide */
   html {
+    /* Firefox Edge/IE legacy */
     scrollbar-width: none;
     -ms-overflow-style: none;
   }

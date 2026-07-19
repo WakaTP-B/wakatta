@@ -1,0 +1,41 @@
+<turbo-frame id="qcm-result-frame">
+
+	<div class="fixed inset-0 bg-encre/50 z-40"></div>
+
+	<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-beige-washi border-2 border-bleu-aiiro rounded-lg p-6 text-center w-80">
+
+		{% if isCorrect %}
+			<p class="font-jp text-2xl mb-1">せいかい！</p>
+			<p class="text-encre/60 mb-4">seikai !</p>
+		{% else %}
+			<p class="font-jp text-2xl mb-1">ざんねん</p>
+			<p class="text-encre/60 mb-4">zannen</p>
+
+			<p class="text-encre mb-4">
+				La bonne réponse était :
+				<span class="font-bold">{{ correctAnswer }}</span>
+			</p>
+		{% endif %}
+
+		<p class="text-sm text-encre/60 mb-4">
+			{% if xpAmount >= 0 %}+{{ xpAmount }}
+			{% else %}
+				{{ xpAmount }}
+			{% endif %}
+			XP
+		</p>
+
+		{# Si la session vient d'être clôturée (10e question), direction le récap, sinon question suivante #}
+		{% if session.endedAt is not null %}
+			<a href="{{ path('app_activity_vocabulaire_recap', {session: session.id, difficulty: difficulty.value}) }}" data-turbo-frame="_top" class="btn inline-block">
+				Suivant
+			</a>
+		{% else %}
+			<a href="{{ path('app_activity_vocabulaire', {level: difficulty.value, session: session.id}) }}" data-turbo-frame="_top" class="btn inline-block">
+				Suivant
+			</a>
+		{% endif %}
+
+	</div>
+
+</turbo-frame>
