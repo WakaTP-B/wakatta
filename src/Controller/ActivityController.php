@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Enum\DifficultyLevel;
 use App\Service\QcmGenerator;
+use App\Service\QcmSessionManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +15,7 @@ final class ActivityController extends AbstractController
 {
     #[Route('/vocabulaire', name: 'app_activity_vocabulaire')]
     #[IsGranted('ROLE_USER')]
-    public function vocabulaire(Request $request, QcmGenerator $qcmGenerator): Response
+    public function vocabulaire(Request $request, QcmGenerator $qcmGenerator, QcmSessionManager $qcmSessionManager): Response
     {
         $levelParam = $request->query->get('level');
 
@@ -34,8 +35,12 @@ final class ActivityController extends AbstractController
             return $this->redirectToRoute('app_dashboard');
         }
 
+        $session = $qcmSessionManager->getOrCreateSession($this->getUser());
+        $questionNumber = $qcmSessionManager->getCurrentQuestionNumber($session);
+
         return $this->render('activity/vocabulaire.html.twig', [
             'question' => $question,
+            'questionNumber' => $questionNumber,
         ]);
     }
 
