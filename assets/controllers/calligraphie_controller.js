@@ -44,7 +44,13 @@ export default class extends Controller {
 
     startStroke(event) {
         this.isDrawing = true
-        this.currentStroke = [this.getPosition(event)]
+        const pos = this.getPosition(event)
+        this.currentStroke = [pos]
+
+        this.ctx.beginPath()
+        this.ctx.moveTo(pos.x, pos.y)
+        this.ctx.lineTo(pos.x, pos.y)
+        this.ctx.stroke()
     }
 
     drawStroke(event) {

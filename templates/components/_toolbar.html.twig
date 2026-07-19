@@ -3,23 +3,25 @@
   - buttons : tableau de { icon: 'replay'|'undo'|'redo'|'reset', action: 'controller#method', label: '...' }
   - validate_action : action Stimulus du bouton Valider (ex: 'calligraphie#validate')
   - validate_label : texte aria-label du bouton Valider #}
-<div class="w-full flex items-center bg-gris-pierre">
+<div class="w-full flex items-center justify-between bg-gris-pierre rounded-lg px-4 border border-bleu-aiiro" style="height: 56px;">
 	{% for button in buttons %}
-		<button type="button" data-action="click->{{ button.action }}" class="flex-1 h-11 flex items-center justify-center text-encre" aria-label="{{ button.label }}">
+		<button
+			type="button" data-action="click->{{ button.action }}" class="flex items-center justify-center text-encre" aria-label="{{ button.label }}">
+
+			{# Replay #}
 			{% if button.icon == 'replay' %}
-				<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<polyline points="1 4 1 10 7 10"/>
-					<path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+				<svg height="30" viewbox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M16 3.25001C14.1498 3.24793 12.3215 3.6495 10.6424 4.4267C8.9634 5.20391 7.47414 6.33805 6.2785 7.75001H8.875C9.17337 7.75001 9.45952 7.86853 9.6705 8.07951C9.88147 8.29049 10 8.57664 10 8.87501C10 9.17337 9.88147 9.45952 9.6705 9.6705C9.45952 9.88148 9.17337 10 8.875 10H3.625C3.32663 10 3.04048 9.88148 2.8295 9.6705C2.61853 9.45952 2.5 9.17337 2.5 8.87501V3.62501C2.5 3.32664 2.61853 3.04049 2.8295 2.82951C3.04048 2.61853 3.32663 2.50001 3.625 2.50001C3.92337 2.50001 4.20952 2.61853 4.4205 2.82951C4.63147 3.04049 4.75 3.32664 4.75 3.62501V6.07751C6.15647 4.48007 7.88741 3.20091 9.82735 2.32535C11.7673 1.44979 13.8716 0.997964 16 1.00001C24.2845 1.00001 31 7.71551 31 16C31 24.2845 24.2845 31 16 31C7.7155 31 1 24.2845 1 16C1 15.283 1.049 14.5795 1.147 13.8895C1.18576 13.6386 1.31409 13.4103 1.50824 13.2468C1.70238 13.0832 1.9492 12.9956 2.203 13C2.917 13 3.442 13.669 3.352 14.3785C3.0225 16.9484 3.48375 19.5577 4.67432 21.8589C5.8649 24.16 7.72829 26.0439 10.0163 27.2595C12.3044 28.4751 14.9085 28.9649 17.4818 28.6634C20.0551 28.362 22.4756 27.2837 24.4207 25.5723C26.3659 23.8608 27.7435 21.5973 28.3701 19.0833C28.9966 16.5692 28.8424 13.924 27.9279 11.4998C27.0134 9.07564 25.3821 6.9876 23.2512 5.51378C21.1203 4.03996 18.5909 3.25032 16 3.25001ZM14.842 10.285C14.4995 10.0949 14.1134 9.9975 13.7217 10.0024C13.3301 10.0073 12.9465 10.1144 12.6089 10.3131C12.2714 10.5117 11.9915 10.795 11.797 11.135C11.6025 11.475 11.5001 11.8598 11.5 12.2515V19.75C11.5001 20.1417 11.6025 20.5265 11.797 20.8665C11.9915 21.2065 12.2714 21.4898 12.6089 21.6885C12.9465 21.8871 13.3301 21.9942 13.7217 21.9991C14.1134 22.004 14.4995 21.9066 14.842 21.7165L21.5905 17.9695C21.9415 17.7747 22.2339 17.4896 22.4375 17.1436C22.6411 16.7977 22.7485 16.4036 22.7485 16.0023C22.7485 15.6009 22.6411 15.2068 22.4375 14.8609C22.2339 14.515 21.9415 14.2298 21.5905 14.035L14.842 10.285ZM13.75 12.2515L20.4985 16.0015L13.75 19.7485V12.2515Z" fill="currentColor" stroke="currentColor" stroke-width="2"/>
 				</svg>
+				{# Undo #}
 			{% elseif button.icon == 'undo' %}
-				<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<path d="M9 14 4 9l5-5"/>
-					<path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
+				<svg height="20" viewbox="0 0 30 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M15.3884 2.22222C11.5046 2.22222 7.9873 4.42222 5.27601 8L0 0V20H13.19L7.88471 11.9556C9.92184 9.37778 12.5159 7.77778 15.3884 7.77778C20.5765 7.77778 24.9878 12.9111 26.5266 20L30 18.2667C27.9629 8.95556 22.2032 2.22222 15.3884 2.22222Z" fill="currentColor"/>
 				</svg>
+				{# Redo #}
 			{% elseif button.icon == 'redo' %}
-				<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-					<path d="m15 14 5-5-5-5"/>
-					<path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>
+				<svg height="20" viewbox="0 0 30 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+					<path d="M24.7214 8C22.0088 4.42222 18.4897 2.22222 14.6041 2.22222C7.78592 2.22222 2.02346 8.95556 0 18.2667L3.46041 20C4.23229 16.4441 5.7251 13.3481 7.72609 11.1535C9.72708 8.95883 12.1341 7.77747 14.6041 7.77778C17.4633 7.77778 20.0733 9.37778 22.1114 11.9556L16.8035 20H30V0L24.7214 8Z" fill="currentColor"/>
 				</svg>
 			{% elseif button.icon == 'reset' %}
 				<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -30,8 +32,8 @@
 		</button>
 	{% endfor %}
 
-	<button type="button" data-action="click->{{ validate_action }}" class="w-11 h-11 flex items-center justify-center bg-rouge-torii text-white" aria-label="{{ validate_label }}">
-		<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+	<button type="button" data-action="click->{{ validate_action }}" class="w-9 h-9 flex items-center justify-center bg-rouge-torii rounded-lg text-white" aria-label="{{ validate_label }}">
+		<svg height="24" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
 			<polyline points="20 6 9 17 4 12"/>
 		</svg>
 	</button>
