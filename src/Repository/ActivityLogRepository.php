@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\ActivityLog;
+use App\Entity\Session;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,47 @@ class ActivityLogRepository extends ServiceEntityRepository
         parent::__construct($registry, ActivityLog::class);
     }
 
-//    /**
-//     * @return ActivityLog[] Returns an array of ActivityLog objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('a.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * Count attempt / session
+     */
+    public function countForSession(Session $session): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->andWhere('a.session = :session')
+            ->setParameter('session', $session)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+    /**
+     * Count bonnes réponses / session
+     */
+    public function countSuccessForSession(Session $session): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->andWhere('a.session = :session')
+            ->andWhere('a.result = :result')
+            ->setParameter('session', $session)
+            ->setParameter('result', 'success')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 
-//    public function findOneBySomeField($value): ?ActivityLog
-//    {
-//        return $this->createQueryBuilder('a')
-//            ->andWhere('a.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+    /**
+     * Récupère les ids des mots déjà posés dans cette session, pour éviter les doublons.
+     *
+     * @return int[]
+     */
+    public function findVocabularyIdsForSession(Session $session): array
+    {
+        $result = $this->createQueryBuilder('a')
+            ->select('IDENTITY(a.vocabulary) as vocabularyId')
+            ->andWhere('a.session = :session')
+            ->setParameter('session', $session)
+            ->getQuery()
+            ->getResult();
+
+        return array_column($result, 'vocabularyId');
+    }
 }

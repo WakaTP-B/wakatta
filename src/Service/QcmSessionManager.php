@@ -4,34 +4,25 @@ namespace App\Service;
 
 use App\Entity\Session;
 use App\Entity\User;
+use App\Repository\ActivityLogRepository;
 use App\Repository\SessionRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 final class QcmSessionManager
 {
-    private const SESSION_KEY = 'qcm_session_id';
+    private const QUESTIONS_PER_SESSION = 10;
 
     public function __construct(
-        private readonly RequestStack $requestStack,
         private readonly SessionRepository $sessionRepository,
+        private readonly ActivityLogRepository $activityLogRepository,
         private readonly EntityManagerInterface $entityManager,
-    ) {
-    }
+    ) {}
 
-    public function getOrCreateSession(User $user): Session
+    /**
+     * Crée une toute nouvelle série de 10 questions.
+     */
+    public function createSession(User $user): Session
     {
-        $httpSession = $this->requestStack->getSession();
-        $sessionId = $httpSession->get(self::SESSION_KEY);
-
-        if ($sessionId !== null) {
-            $session = $this->sessionRepository->find($sessionId);
-
-            if ($session !== null && $session->getEndedAt() === null) {
-                return $session;
-            }
-        }
-
         $session = new Session();
         $session->setPlayer($user);
         $session->setStartedAt(new \DateTimeImmutable());
@@ -39,13 +30,54 @@ final class QcmSessionManager
         $this->entityManager->persist($session);
         $this->entityManager->flush();
 
-        $httpSession->set(self::SESSION_KEY, $session->getId());
+        return $session;
+    }
+
+    /**
+     * Récupère une session en cours par son id, uniquement si elle appartient
+     * bien au joueur et n'est pas déjà terminée. Sinon retourne null.
+     */
+    public function findOngoingSession(int $sessionId, User $user): ?Session
+    {
+        $session = $this->sessionRepository->find($sessionId);
+
+        if ($session === null || $session->getPlayer() !== $user || $session->getEndedAt() !== null) {
+            return null;
+        }
 
         return $session;
     }
 
     public function getCurrentQuestionNumber(Session $session): int
     {
-        return count($session->getActivityLogs()) + 1;
+        return $this->activityLogRepository->countForSession($session) + 1;
+    }
+
+    /**
+     * Récupère une session par son id, pour le joueur donné
+     */
+    public function getSessionForUser(int $sessionId, User $user): ?Session
+    {
+        $session = $this->sessionRepository->find($sessionId);
+
+        if ($session === null || $session->getPlayer() !== $user) {
+            return null;
+        }
+
+        return $session;
+    }
+
+    /**
+     * Clôture la session si elle a atteint le nombre de questions prévu.
+     * À appeler après chaque réponse enregistrée.
+     */
+    public function closeSessionIfComplete(Session $session): void
+    {
+        $answeredCount = $this->activityLogRepository->countForSession($session);
+
+        if ($answeredCount >= self::QUESTIONS_PER_SESSION && $session->getEndedAt() === null) {
+            $session->setEndedAt(new \DateTimeImmutable());
+            $this->entityManager->flush();
+        }
     }
 }
