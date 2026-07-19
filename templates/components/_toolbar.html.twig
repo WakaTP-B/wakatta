@@ -1,0 +1,38 @@
+{#  Toolbar
+  Paramètres attendus :
+  - buttons : tableau de { icon: 'replay'|'undo'|'redo'|'reset', action: 'controller#method', label: '...' }
+  - validate_action : action Stimulus du bouton Valider (ex: 'calligraphie#validate')
+  - validate_label : texte aria-label du bouton Valider #}
+<div class="w-full flex items-center bg-gris-pierre">
+	{% for button in buttons %}
+		<button type="button" data-action="click->{{ button.action }}" class="flex-1 h-11 flex items-center justify-center text-encre" aria-label="{{ button.label }}">
+			{% if button.icon == 'replay' %}
+				<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<polyline points="1 4 1 10 7 10"/>
+					<path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+				</svg>
+			{% elseif button.icon == 'undo' %}
+				<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M9 14 4 9l5-5"/>
+					<path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"/>
+				</svg>
+			{% elseif button.icon == 'redo' %}
+				<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="m15 14 5-5-5-5"/>
+					<path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5v0A5.5 5.5 0 0 0 9.5 20H13"/>
+				</svg>
+			{% elseif button.icon == 'reset' %}
+				<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<polyline points="1 4 1 10 7 10"/>
+					<path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+				</svg>
+			{% endif %}
+		</button>
+	{% endfor %}
+
+	<button type="button" data-action="click->{{ validate_action }}" class="w-11 h-11 flex items-center justify-center bg-rouge-torii text-white" aria-label="{{ validate_label }}">
+		<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+			<polyline points="20 6 9 17 4 12"/>
+		</svg>
+	</button>
+</div>

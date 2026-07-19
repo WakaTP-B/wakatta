@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hiragana - Calligraphie - Wakatta!
+{% endblock %}
+
+{% block body %}
+	<p class="text-encre/50 text-sm font-semibold uppercase tracking-wide mb-1">Hiragana</p>
+	<h1 class="titre-page">Calligraphie</h1>
+	<div class="flex flex-col items-center" data-controller="calligraphie" data-calligraphie-romaji-value="{{ hiragana.romaji }}" data-calligraphie-svg-url-value="{{ asset('animcjk/' ~ hiragana.romaji ~ '.svg') }}">
+
+		<h1 class="titre-page">{{ hiragana.character }}
+			<span class="text-xl text-encre/60">({{ hiragana.romaji }})</span>
+		</h1>
+
+		{# Zone de tracé : le SVG animé et le canvas de dessin sont superposés #}
+		<div class="relative rounded-lg border border-gris-pierre" style="width: 320px; height: 320px; background-color: white; background-image: repeating-linear-gradient(0deg, #D9D4CC 0 1px, transparent 1px 40px), repeating-linear-gradient(90deg, #D9D4CC 0 1px, transparent 1px 40px);">
+			<div data-calligraphie-target="animationContainer" class="absolute inset-0"></div>
+			<canvas data-calligraphie-target="canvas" width="320" height="320" class="absolute inset-0 cursor-crosshair" style="touch-action: none;"></canvas>
+		</div>
+
+
+		{# Toolbar #}
+		<div class="w-full mt-6" style="max-width: 320px;">
+			{% include 'components/_toolbar.html.twig' with {
+                buttons: [
+                    {icon: 'replay', action: 'calligraphie#replay', label: 'Rejouer'},
+                    {icon: 'undo', action: 'calligraphie#undo', label: 'Annuler'},
+                    {icon: 'redo', action: 'calligraphie#redo', label: 'Rétablir'},
+                ],
+                validate_action: 'calligraphie#validate',
+                validate_label: 'Valider',
+            } %}
+		</div>
+	</div>
+</div>{% endblock %}
