@@ -16,10 +16,26 @@ final class DashboardController extends AbstractController
      * Mapping "nom en base" -> "libellé affiché" + "route du module".
      */
     private const MODULE_LABELS = [
-        'QCM Vocabulaire' => ['label' => 'Vocabulaire', 'route' => 'app_activity_vocabulaire'],
-        'Hiragana Calligraphie' => ['label' => 'Hiragana - Calligraphie', 'route' => 'app_activity_calligraphie'],
-        'Hiragana Complétion' => ['label' => 'Hiragana - Complétion', 'route' => 'app_activity_completion'],
-        'Hiragana Assemblage' => ['label' => 'Hiragana - Assemblage', 'route' => 'app_activity_assemblage'],
+        'QCM Vocabulaire' => [
+            'label' => 'Vocabulaire',
+            'route' => 'app_activity_vocabulaire',
+            'availableDifficulties' => ['facile', 'moyen', 'difficile'],
+        ],
+        'Hiragana Calligraphie' => [
+            'label' => 'Hiragana - Calligraphie',
+            'route' => 'app_activity_calligraphie',
+            'availableDifficulties' => [],
+        ],
+        'Hiragana Complétion' => [
+            'label' => 'Hiragana - Complétion',
+            'route' => 'app_activity_completion',
+            'availableDifficulties' => ['facile', 'moyen', 'difficile'],
+        ],
+        'Hiragana Assemblage' => [
+            'label' => 'Hiragana - Assemblage',
+            'route' => 'app_activity_assemblage',
+            'availableDifficulties' => ['facile', 'moyen', 'difficile'],
+        ],
     ];
 
     #[Route('/dashboard', name: 'app_dashboard')]
@@ -46,6 +62,7 @@ final class DashboardController extends AbstractController
             $modules[] = [
                 'label' => $config['label'],
                 'route' => $config['route'],
+                'availableDifficulties' => $config['availableDifficulties'] ?? [],
                 'progression' => $levelCalculator->calculProgress($xpForActivity),
             ];
         }

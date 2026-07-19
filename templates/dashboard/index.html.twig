@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-	<div class="px-4 pt-6 pb-10">
+	<div class="px-4 pt-6 pb-10" data-controller="level-select">
 
 		<h1 class="titre-page">
 			ようこそ、{{ app.user.username }}
@@ -23,23 +23,63 @@
 
 		<section class="space-y-4">
 			{% for module in modules %}
-				<a href="{{ path(module.route) }}" class="block bg-white rounded-lg overflow-hidden shadow-sm border border-gris-pierre">
-					<div class="bg-white rounded-lg overflow-hidden shadow-sm border border-gris-pierre">
+				{% if module.availableDifficulties is not empty %}
+					<button type="button" class="block w-full text-left bg-white rounded-lg overflow-hidden shadow-sm border border-gris-pierre" data-action="click->level-select#open" data-level-select-route-param="{{ path(module.route) }}" data-level-select-label-param="{{ module.label }}" data-level-select-available-param="{{ module.availableDifficulties|json_encode }}">
 						<div class="h-32 bg-gris-pierre flex items-center justify-center text-encre/40 text-sm">
 							Image du module
 						</div>
 						<div class="p-4">
 							<h3 class="font-semibold text-encre mb-2">{{ module.label }}</h3>
 							{% include 'dashboard/_progress_bar.html.twig' with {
-                        label: 'Niv. ' ~ module.progression.level,
-                        current: module.progression.xpCurrentLevel,
-                        needed: module.progression.xpNextLevel,
-                        percent: module.progression.percent
-                    } %}
+                                label: 'Niv. ' ~ module.progression.level,
+                                current: module.progression.xpCurrentLevel,
+                                needed: module.progression.xpNextLevel,
+                                percent: module.progression.percent
+                            } %}
 						</div>
-					</div>
-				</a>
+					</button>
+				{% else %}
+					<a href="{{ path(module.route) }}" class="block bg-white rounded-lg overflow-hidden shadow-sm border border-gris-pierre">
+						<div class="h-32 bg-gris-pierre flex items-center justify-center text-encre/40 text-sm">
+							Image du module
+						</div>
+						<div class="p-4">
+							<h3 class="font-semibold text-encre mb-2">{{ module.label }}</h3>
+							{% include 'dashboard/_progress_bar.html.twig' with {
+                                label: 'Niv. ' ~ module.progression.level,
+                                current: module.progression.xpCurrentLevel,
+                                needed: module.progression.xpNextLevel,
+                                percent: module.progression.percent
+                            } %}
+						</div>
+					</a>
+				{% endif %}
 			{% endfor %}
 		</section>
+
+		{# Backdrop du modal #}
+		<div data-level-select-target="backdrop" data-action="click->level-select#close" class="hidden fixed inset-0 bg-encre/50 z-40"></div>
+
+		{# Modal de sélection de niveau #}
+		<div data-level-select-target="modal" class="hidden opacity-0 scale-95 transition-all duration-200 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-lg shadow-lg p-6 w-80">
+			<h2 class="titre-section text-center mb-4" data-level-select-target="title"></h2>
+
+			<div class="space-y-3">
+				<button type="button" data-level-select-target="facileBtn" data-action="click->level-select#selectLevel" data-level-select-level-param="facile" class="w-full text-center border-2 border-bleu-aiiro rounded-lg py-2 disabled:opacity-40 disabled:cursor-not-allowed">
+					<span class="block font-semibold">Facile</span>
+					<span class="block text-sm">かんたん - Kantan</span>
+				</button>
+
+				<button type="button" data-level-select-target="moyenBtn" data-action="click->level-select#selectLevel" data-level-select-level-param="moyen" class="w-full text-center border-2 border-bleu-aiiro rounded-lg py-2 disabled:opacity-40 disabled:cursor-not-allowed">
+					<span class="block font-semibold">Moyen</span>
+					<span class="block text-sm">ふつう - Futsuu</span>
+				</button>
+
+				<button type="button" data-level-select-target="difficileBtn" data-action="click->level-select#selectLevel" data-level-select-level-param="difficile" class="w-full text-center border-2 border-bleu-aiiro rounded-lg py-2 disabled:opacity-40 disabled:cursor-not-allowed">
+					<span class="block font-semibold">Difficile</span>
+					<span class="block text-sm">むずかしい - Muzukashii</span>
+				</button>
+			</div>
+		</div>
 	</div>
 {% endblock %}
