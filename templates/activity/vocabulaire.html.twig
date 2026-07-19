@@ -3,7 +3,30 @@
 {% block title %}Vocabulaire - Wakatta!{% endblock %}
 
 {% block body %}
-<div class="px-4 pb-10">
-    <h1 class="titre-page">Vocabulaire</h1>
+<div class="px-4 pb-10 w-full max-w-sm">
+    <h1 class="titre-page text-center">Vocabulaire</h1>
+
+    <div class="bg-white rounded-lg shadow-sm border border-gris-pierre p-6 text-center mb-6">
+        {% if question.difficulty.value == 'facile' %}
+            <p class="font-jp text-4xl mb-2">{{ question.vocabulary.hiragana }}</p>
+            <p class="text-encre/60">{{ question.vocabulary.romaji }}</p>
+        {% elseif question.difficulty.value == 'moyen' %}
+            <p class="text-2xl font-semibold mb-2">{{ question.vocabulary.french }}</p>
+            <p class="text-encre/60">{{ question.vocabulary.romaji }}</p>
+        {% else %}
+            <p class="text-2xl font-semibold">{{ question.vocabulary.french }}</p>
+        {% endif %}
+    </div>
+
+    <div class="space-y-3">
+        {% for choice in question.choices %}
+            <button
+                type="button"
+                class="w-full text-center border-2 border-bleu-aiiro rounded-lg py-3 font-jp text-lg"
+            >
+                {{ choice }}
+            </button>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}
