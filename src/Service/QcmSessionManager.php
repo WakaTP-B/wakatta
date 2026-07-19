@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class QcmSessionManager
 {
-    private const QUESTIONS_PER_SESSION = 10;
+    private const QUESTIONS_PER_SESSION = 5;
 
     public function __construct(
         private readonly SessionRepository $sessionRepository,
@@ -19,7 +19,7 @@ final class QcmSessionManager
     ) {}
 
     /**
-     * Crée une toute nouvelle série de 10 questions.
+     * Crée une toute nouvelle série de QUESTIONS_PER_SESSION questions.
      */
     public function createSession(User $user): Session
     {
