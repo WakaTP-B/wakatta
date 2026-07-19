@@ -62,8 +62,11 @@
 
 		</header>
 
-		<div class="pt-16"> {% block body %}{% endblock %}
+		<div class="pt-16">
+			<div class="px-4 pt-4 pb-10">
+			 	{% block body %}{% endblock %}
 			</div>
+		</div>
 
 			{% include '_menu_drawer.html.twig' %}
 		</body>
