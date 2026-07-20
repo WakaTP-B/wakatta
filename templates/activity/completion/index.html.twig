@@ -61,9 +61,11 @@
 				{% include 'components/_toolbar.html.twig' with {
                     buttons: [
                         {icon: 'reset', action: 'completion#reset', label: 'Recommencer'},
+                        {icon: 'undo', action: 'completion#undo', label: 'Annuler'},
                     ],
                     validate_action: 'completion#validate',
                     validate_label: 'Valider',
+                    group_icons: true,
                 } %}
 			</div>
 		</form>

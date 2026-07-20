@@ -5,16 +5,15 @@
 	<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-beige-washi border-2 border-bleu-aiiro rounded-lg p-6 text-center w-80">
 
 		{% if isCorrect %}
-			<p class="font-jp text-2xl mb-1">せいかい！</p>
+			<p class="font-jp text-2xl mb-1 text-bleu-aiiro">せいかい！</p>
 			<p class="text-encre/60 mb-4">seikai !</p>
 		{% else %}
-			<p class="font-jp text-2xl mb-1">ざんねん</p>
+			<p class="font-jp text-2xl mb-1 text-bleu-aiiro">ざんねん</p>
 			<p class="text-encre/60 mb-4">zannen</p>
 
-			<p class="text-encre mb-4">
-				Le mot était :
-				<span class="font-jp font-bold text-xl">{{ correctWord }}</span>
-			</p>
+			<p class="text-encre/50 text-xs tracking-wide mb-1">La réponse était :</p>
+			<p class="font-jp font-bold text-xl mb-1">{{ correctWord }}</p>
+			<p class="text-encre/60 text-sm mb-4">{{ correctRomaji }}</p>
 		{% endif %}
 
 		<p class="text-sm text-encre/60 mb-4">

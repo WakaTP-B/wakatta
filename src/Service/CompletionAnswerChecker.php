@@ -70,6 +70,7 @@ final class CompletionAnswerChecker
             'isCorrect' => $isCorrect,
             'xpAmount' => $xpAmount,
             'correctWord' => $vocabulary->getHiragana(),
+            'correctRomaji' => $vocabulary->getRomaji(),
         ];
     }
 }

@@ -120,6 +120,7 @@ final class QcmController extends AbstractController
             'isCorrect' => $result['isCorrect'],
             'xpAmount' => $result['xpAmount'],
             'correctAnswer' => $result['correctAnswer'],
+            'correctRomaji' => $result['correctRomaji'],
             'difficulty' => $difficulty,
             'session' => $session,
         ]);

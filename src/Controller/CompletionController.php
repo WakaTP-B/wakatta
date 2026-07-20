@@ -115,6 +115,7 @@ final class CompletionController extends AbstractController
             'isCorrect' => $result['isCorrect'],
             'xpAmount' => $result['xpAmount'],
             'correctWord' => $result['correctWord'],
+            'correctRomaji' => $result['correctRomaji'],
             'difficulty' => $difficulty,
             'session' => $session,
         ]);

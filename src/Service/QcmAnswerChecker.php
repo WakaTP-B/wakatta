@@ -20,8 +20,7 @@ final class QcmAnswerChecker
         private readonly ActivityRepository $activityRepository,
         private readonly DifficultyRepository $difficultyRepository,
         private readonly XpRuleRepository $xpRuleRepository,
-    ) {
-    }
+    ) {}
 
     /**
      * Check la réponse donnée par le joueur, enregistre le résultat en BDD
@@ -75,6 +74,7 @@ final class QcmAnswerChecker
             'isCorrect' => $isCorrect,
             'xpAmount' => $xpAmount,
             'correctAnswer' => $correctAnswer,
+            'correctRomaji' => $vocabulary->getRomaji(),
         ];
     }
 }

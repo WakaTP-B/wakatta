@@ -4,22 +4,22 @@
 {% endblock %}
 
 {% block body %}
-	<div class="w-full max-w-sm" data-controller="qcm">
-		<h1 class="titre-page">Vocabulaire</h1>
+	<h1 class="titre-page">Vocabulaire</h1>
 
-		<div class="mb-4">
-			{% include 'dashboard/_progress_bar.html.twig' with {
-				label: 'Question',
-				current: questionNumber,
-				needed: 5,
-				percent: (questionNumber / 5 * 100),
-				suffix: '',
-				color: 'bg-bleu-aiiro',
-				textColor: 'text-bleu-aiiro'
-				} %}
-		</div>
+	<div class="mb-4">
+		{% include 'dashboard/_progress_bar.html.twig' with {
+            label: 'Question',
+            current: questionNumber,
+            needed: 5,
+            percent: (questionNumber / 5 * 100),
+            suffix: '',
+            color: 'bg-bleu-aiiro',
+            textColor: 'text-bleu-aiiro'
+            } %}
+	</div>
 
-		<div class="bg-white rounded-lg shadow-sm border border-gris-pierre p-6 text-center mb-6">
+	<div class="w-full flex flex-col items-center" data-controller="qcm">
+		<div class="bg-white rounded-lg shadow-sm border border-gris-pierre px-6 py-3 text-center mb-6 w-full" style="max-width: 320px;">
 			{% if question.difficulty.value == 'facile' %}
 				<p class="font-jp text-4xl mb-2">{{ question.vocabulary.hiragana }}</p>
 				<p class="text-encre/60">{{ question.vocabulary.romaji }}</p>
@@ -38,7 +38,7 @@
 			<input type="hidden" name="sessionId" value="{{ session.id }}">
 			<input type="hidden" name="answer" data-qcm-target="answerInput" value="">
 
-			<div class="space-y-4 mb-8">
+			<div class="space-y-4 mb-10 mt-4">
 				{% for choice in question.choices %}
 					<button type="button" data-qcm-target="choice" data-action="click->qcm#select" data-qcm-value-param="{{ choice }}" class="w-full text-center border-2 border-bleu-aiiro rounded-lg py-3 font-jp text-lg font-normal transition-all">
 						{{ choice }}

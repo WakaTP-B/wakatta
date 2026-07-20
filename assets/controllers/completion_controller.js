@@ -29,7 +29,7 @@ export default class extends Controller {
         this.placedIds = []
 
         this.blankTargets.forEach(blank => {
-            blank.textContent = ''
+            blank.textContent = '_'
             delete blank.dataset.filledBy
         })
 
@@ -49,5 +49,23 @@ export default class extends Controller {
         if (this.placedIds.length === this.blankTargets.length) {
             this.formTarget.requestSubmit()
         }
+    }
+
+    undo() {
+        if (this.placedIds.length === 0) return
+
+        // On retire le dernier hiragana placé, on vide sa case, on réactive son bouton
+        const lastId = this.placedIds.pop()
+        const blank = this.blankTargets[this.placedIds.length]
+        blank.textContent = '_'
+        delete blank.dataset.filledBy
+
+        const button = this.choiceTargets.find(btn => btn.dataset.result === String(lastId))
+        if (button) {
+            button.disabled = false
+            button.classList.remove('opacity-30')
+        }
+
+        this.updateAnswerInput()
     }
 }
