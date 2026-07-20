@@ -6,13 +6,14 @@ export default class extends Controller {
     static values = { svgUrl: String, romaji: String }
 
     connect() {
-    if (this.hasAnimationContainerTarget) {
-        this.loadAnimation()
+        // le hot reload peut trigger connect avant que le DOM soit complet
+        if (this.hasAnimationContainerTarget) {
+            this.loadAnimation()
+        }
+        if (this.hasDrawingTarget) {
+            this.loadDrawing()
+        }
     }
-    if (this.hasDrawingTarget) {
-        this.loadDrawing()
-    }
-}
 
     loadAnimation() {
         fetch(this.svgUrlValue)

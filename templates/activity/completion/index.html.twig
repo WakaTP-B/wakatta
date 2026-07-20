@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hiragana - Complétion - Wakatta!
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+
+{% block body %}
+	<p class="text-encre/50 text-sm font-semibold uppercase tracking-wide mb-1">Hiragana</p>
+	<h1 class="titre-page">Complétion</h1>
+
+	<div class="mb-4">
+		{% include 'dashboard/_progress_bar.html.twig' with {
+            label: 'Mot',
+            current: questionNumber,
+            needed: 5,
+            percent: (questionNumber / 5 * 100),
+            suffix: '',
+            color: 'bg-bleu-aiiro',
+            textColor: 'text-bleu-aiiro'
+        } %}
+	</div>
+
+	<div class="flex flex-col items-center" data-controller="completion">
+
+		<div class="bg-white rounded-lg shadow-sm border border-gris-pierre px-6 py-3 text-center mb-6 w-full" style="max-width: 320px;">
+			<p class="text-2xl font-semibold mb-1">{{ question.vocabulary.french }}</p>
+			{% if question.showRomaji %}
+				<p class="text-encre/60">{{ question.vocabulary.romaji }}</p>
+			{% endif %}
+		</div>
+
+		{# Les cases à compléter #}
+		<div class="flex justify-center gap-2 mb-6 border border-gris-pierre rounded-lg p-4 w-full" style="max-width: 320px;">
+			{% for blank in question.blanks %}
+				<div data-completion-target="blank" data-completion-hiragana-id-param="{{ blank.id }}" class="w-14 h-14 flex items-center justify-center border-2 border-bleu-aiiro rounded-lg font-jp text-2xl bg-white">
+					_
+				</div>
+			{% endfor %}
+		</div>
+
+		{# La grille de choix #}
+		<div class="flex flex-wrap justify-start gap-3 mb-6" style="max-width: 320px;">
+			{% for choice in question.choices %}
+				<button type="button" data-completion-target="choice" data-action="click->completion#select" data-completion-hiragana-id-param="{{ choice.id }}" class="w-15 h-15 flex items-center justify-center bg-white border-2 border-bleu-aiiro rounded-lg font-jp text-2xl">
+					{{ choice.character }}
+				</button>
+			{% endfor %}
+		</div>
+
+		<form method="post" action="{{ path('app_activity_completion_reponse') }}" data-turbo-frame="completion-result-frame" data-completion-target="form">
+			<input type="hidden" name="vocabularyId" value="{{ question.vocabulary.id }}">
+			<input type="hidden" name="difficulty" value="{{ question.difficulty.value }}">
+			<input type="hidden" name="sessionId" value="{{ session.id }}">
+			<input type="hidden" name="answer" data-completion-target="answerInput" value="">
+
+			<div style="width: 320px;">
+				{% include 'components/_toolbar.html.twig' with {
+                    buttons: [
+                        {icon: 'reset', action: 'completion#reset', label: 'Recommencer'},
+                    ],
+                    validate_action: 'completion#validate',
+                    validate_label: 'Valider',
+                } %}
+			</div>
+		</form>
+
+		<turbo-frame id="completion-result-frame"></turbo-frame>
+	</div>
+{% endblock %}

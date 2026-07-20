@@ -8,7 +8,7 @@ use App\Repository\VocabularyRepository;
 use App\Repository\XpTransactionRepository;
 use App\Service\QcmAnswerChecker;
 use App\Service\QcmGenerator;
-use App\Service\QcmSessionManager;
+use App\Service\SessionManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +22,7 @@ final class QcmController extends AbstractController
     public function vocabulaire(
         Request $request,
         QcmGenerator $qcmGenerator,
-        QcmSessionManager $qcmSessionManager,
+        SessionManager $qcmSessionManager,
         ActivityLogRepository $activityLogRepository,
         VocabularyRepository $vocabularyRepository,
     ): Response {
@@ -92,7 +92,7 @@ final class QcmController extends AbstractController
         Request $request,
         VocabularyRepository $vocabularyRepository,
         QcmAnswerChecker $qcmAnswerChecker,
-        QcmSessionManager $qcmSessionManager,
+        SessionManager $sessionManager,
     ): Response {
         // Récupération des données envoyées par le formulaire (champs cachés)
         $vocabularyId = $request->request->get('vocabularyId');
@@ -103,7 +103,7 @@ final class QcmController extends AbstractController
         $vocabulary = $vocabularyRepository->find($vocabularyId);
         $difficulty = DifficultyLevel::from($levelParam);
 
-        $session = $qcmSessionManager->findOngoingSession((int) $sessionId, $this->getUser());
+        $session = $sessionManager->findOngoingSession((int) $sessionId, $this->getUser());
 
         $result = $qcmAnswerChecker->checkAnswer(
             user: $this->getUser(),
@@ -114,7 +114,7 @@ final class QcmController extends AbstractController
         );
 
         // On check si la session est terminée (le récap s'affichera au clic sur "Suivant")
-        $qcmSessionManager->closeSessionIfComplete($session);
+        $sessionManager->closeSessionIfComplete($session);
 
         return $this->render('activity/qcm/_result_modal.html.twig', [
             'isCorrect' => $result['isCorrect'],
@@ -129,14 +129,14 @@ final class QcmController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function vocabulaireRecap(
         Request $request,
-        QcmSessionManager $qcmSessionManager,
+        SessionManager $sessionManager,
         ActivityLogRepository $activityLogRepository,
         XpTransactionRepository $xpTransactionRepository,
     ): Response {
         $sessionId = (int) $request->query->get('session');
         $difficulty = DifficultyLevel::from($request->query->get('difficulty'));
 
-        $session = $qcmSessionManager->getSessionForUser($sessionId, $this->getUser());
+        $session = $sessionManager->getSessionForUser($sessionId, $this->getUser());
 
         if ($session === null) {
             return $this->redirectToRoute('app_dashboard');
