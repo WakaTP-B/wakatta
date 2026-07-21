@@ -60,7 +60,7 @@ export default class extends Controller {
         blank.textContent = '_'
         delete blank.dataset.filledBy
 
-        const button = this.choiceTargets.find(btn => btn.dataset.result === String(lastId))
+        const button = this.choiceTargets.find(btn => btn.dataset.completionHiraganaIdParam === String(lastId))
         if (button) {
             button.disabled = false
             button.classList.remove('opacity-30')
