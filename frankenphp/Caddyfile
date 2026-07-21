@@ -1,6 +1,8 @@
 {
 	skip_install_trust
 
+    default_sni localhost
+
 	{$CADDY_GLOBAL_OPTIONS}
 
 	frankenphp {

@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\ActivityLog;
 use App\Entity\Session;
+use App\Entity\Vocabulary;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -59,5 +60,23 @@ class ActivityLogRepository extends ServiceEntityRepository
             ->getResult();
 
         return array_column($result, 'vocabularyId');
+    }
+
+    /**
+     * Count bonnes réponses pour un Vocabulary précis / session.
+     * Sert à l'Assemblage pour distinguer un mot nouvellement trouvé d'un mot déjà trouvé.
+     */
+    public function countSuccessForVocabularyInSession(Session $session, Vocabulary $vocabulary): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a.id)')
+            ->andWhere('a.session = :session')
+            ->andWhere('a.vocabulary = :vocabulary')
+            ->andWhere('a.result = :result')
+            ->setParameter('session', $session)
+            ->setParameter('vocabulary', $vocabulary)
+            ->setParameter('result', 'success')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }
