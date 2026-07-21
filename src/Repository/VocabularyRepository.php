@@ -44,10 +44,10 @@ class VocabularyRepository extends ServiceEntityRepository
         return $vocabularies[array_rand($vocabularies)];
     }
 
-    
+
     /**
      * Récupère un Vocabulary random pour distracteurs
-     * Exclue mot correct
+     * Exclue mot correct, préviligie mots avec meme nbr de caractères
      *
      * @param Vocabulary $exclude Vocabulary (la bonne réponse)
      * @param int $count Nombre de fakes
@@ -64,8 +64,26 @@ class VocabularyRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
 
-        shuffle($vocabularies);
+        $targetLength = mb_strlen($exclude->getHiragana());
 
-        return array_slice($vocabularies, 0, $count);
+        $sameLength = array_values(array_filter(
+            $vocabularies,
+            fn(Vocabulary $v) => mb_strlen($v->getHiragana()) === $targetLength
+        ));
+        shuffle($sameLength);
+        $distractors = array_slice($sameLength, 0, $count);
+
+        // Si pas assez de mots de la même longueur, on complète avec les autres
+        if (count($distractors) < $count) {
+            $usedIds = array_map(fn(Vocabulary $v) => $v->getId(), $distractors);
+            $others = array_values(array_filter(
+                $vocabularies,
+                fn(Vocabulary $v) => !in_array($v->getId(), $usedIds, true)
+            ));
+            shuffle($others);
+            $distractors = array_merge($distractors, array_slice($others, 0, $count - count($distractors)));
+        }
+
+        return $distractors;
     }
 }

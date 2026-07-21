@@ -8,7 +8,7 @@ use App\Repository\ActivityLogRepository;
 use App\Repository\SessionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class QcmSessionManager
+final class SessionManager
 {
     private const QUESTIONS_PER_SESSION = 5;
 

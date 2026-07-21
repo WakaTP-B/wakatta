@@ -1,11 +1,12 @@
 {#  Toolbar
   Paramètres attendus :
-  - buttons : tableau de { icon: 'replay'|'undo'|'redo'|'reset'|'moyen'|'rate'|'reussi', action: 'controller#method', label: '...', param: '...' (optionnel) }
+  - buttons : tableau de { icon: '...', action: 'controller#method', label: '...', param: '...' (optionnel) }
   - validate_action : optionnel - si fourni, affiche le bouton Valider rouge
   - validate_label : texte aria-label du bouton Valider #}
 
 <div class="w-full flex items-center justify-between bg-gris-pierre rounded-lg px-4 border border-bleu-aiiro" style="height: 56px;">
 	{% for button in buttons %}
+		{% set controllerId = (button.action|split('#'))[0] %}
 		<button
 			type="button" data-action="click->{{ button.action }}" data-result="{{ button.param|default('') }}" class="flex items-center justify-center text-encre" aria-label="{{ button.label }}">
 
@@ -29,7 +30,7 @@
 
 				{# Reset #}
 			{% elseif button.icon == 'reset' %}
-				<svg width="20" height="20" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<svg height="30" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
 					<polyline points="1 4 1 10 7 10"/>
 					<path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
 				</svg>
