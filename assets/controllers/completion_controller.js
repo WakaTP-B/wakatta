@@ -23,6 +23,7 @@ export default class extends Controller {
         button.classList.add('opacity-30')
 
         this.updateAnswerInput()
+        this.updateSubmitButtonState()
     }
 
     reset() {
@@ -39,6 +40,7 @@ export default class extends Controller {
         })
 
         this.updateAnswerInput()
+        this.updateSubmitButtonState()
     }
 
     updateAnswerInput() {
@@ -67,5 +69,18 @@ export default class extends Controller {
         }
 
         this.updateAnswerInput()
+        this.updateSubmitButtonState()
+    }
+
+    get submitButton() {
+        return this.element.querySelector('[data-toolbar-validate]')
+    }
+
+    updateSubmitButtonState() {
+        this.submitButton.disabled = this.placedIds.length !== this.blankTargets.length
+    }
+
+    connect() {
+        this.updateSubmitButtonState()
     }
 }

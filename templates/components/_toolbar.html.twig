@@ -56,8 +56,9 @@
 		</button>
 	{% endfor %}
 
+	{# Valider #}
 	{% if validate_action is defined %}
-		<button type="button" data-action="click->{{ validate_action }}" class="w-9 h-9 flex items-center justify-center bg-rouge-torii rounded-lg text-white" aria-label="{{ validate_label }}">
+		<button type="button" data-action="click->{{ validate_action }}" data-toolbar-validate class="w-9 h-9 flex items-center justify-center bg-rouge-torii rounded-lg text-white disabled:opacity-40 disabled:cursor-not-allowed" aria-label="{{ validate_label }}">
 			<svg height="24" viewbox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
 				<polyline points="20 6 9 17 4 12"/>
 			</svg>
