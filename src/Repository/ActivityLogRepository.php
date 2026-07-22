@@ -64,7 +64,7 @@ class ActivityLogRepository extends ServiceEntityRepository
 
     /**
      * Count bonnes réponses pour un Vocabulary précis / session.
-     * Sert à l'Assemblage pour distinguer un mot nouvellement trouvé d'un mot déjà trouvé.
+     * Sert à l'Assemblage pour differencier un mot trouvé (1ère fois) d'un mot déjà trouvé.
      */
     public function countSuccessForVocabularyInSession(Session $session, Vocabulary $vocabulary): int
     {

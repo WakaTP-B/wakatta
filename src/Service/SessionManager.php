@@ -80,4 +80,16 @@ final class SessionManager
             $this->entityManager->flush();
         }
     }
+
+    /**
+     * Cloture une session manuellement (timer expire, pas de compteur fixe).
+     * Utilise par l'Assemblage, contrairement a closeSessionIfComplete (QCM/Completion).
+     */
+    public function closeSession(Session $session): void
+    {
+        if ($session->getEndedAt() === null) {
+            $session->setEndedAt(new \DateTimeImmutable());
+            $this->entityManager->flush();
+        }
+    }
 }
