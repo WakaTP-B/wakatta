@@ -8,11 +8,14 @@ export default class extends Controller {
     selectedIds = []
     foundWords = []
     score = 0
-    timeLeft = 30
+    timeLeft = 0
 
     connect() {
         this.timeLeft = this.remainingSecondsValue
         this.timerTarget.textContent = this.formatTime(this.timeLeft)
+
+        this.updateTimerColor()
+
         this.start()
     }
 
@@ -24,9 +27,18 @@ export default class extends Controller {
         this.timeLeft--
         this.timerTarget.textContent = this.formatTime(this.timeLeft)
 
+        this.updateTimerColor()
+
         if (this.timeLeft <= 0) {
             clearInterval(this.timerInterval)
             this.finish()
+        }
+    }
+
+    updateTimerColor() {
+        if (this.timeLeft <= 15) {
+            this.timerTarget.classList.add('text-rouge-torii')
+            this.timerTarget.classList.remove('text-encre')
         }
     }
 

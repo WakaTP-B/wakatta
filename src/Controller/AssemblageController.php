@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Doctrine\ORM\EntityManagerInterface;
 
 final class AssemblageController extends AbstractController
 {
@@ -26,7 +25,6 @@ final class AssemblageController extends AbstractController
         AssemblageGenerator $assemblageGenerator,
         SessionManager $sessionManager,
         XpTransactionRepository $xpTransactionRepository,
-        EntityManagerInterface $entityManager
     ): Response {
         $levelParam = $request->query->get('level');
         $sessionIdParam = $request->query->get('session');
@@ -51,10 +49,7 @@ final class AssemblageController extends AbstractController
             // Check cote serveur si session expiré
             $elapsedSeconds = time() - $session->getStartedAt()->getTimestamp();
             if ($elapsedSeconds >= self::TIMER_SESSION_ASSEMBLAGE) {
-                $sessionManager->closeSession($session);
-                $totalXp = $xpTransactionRepository->getTotalXpForSession($session);
-                $session->setTotalXp($totalXp);
-                $entityManager->flush();
+                $sessionManager->closeSessionAndSaveTotalXp($session, $xpTransactionRepository);
 
                 return $this->redirectToRoute('app_activity_assemblage_recap', [
                     'session' => $session->getId(),

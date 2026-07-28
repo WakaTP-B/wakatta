@@ -19,8 +19,8 @@
 
 		{# Timer + score #}
 		<div class="w-full flex justify-between items-center mb-4" style="max-width: 320px;">
-			<p class="font-semibold text-bleu-aiiro" data-assemblage-target="timer">
-				0:{{ '%02d'|format(remainingSeconds ?? 30) }}</p>
+			<p class="font-semibold text-encre" data-assemblage-target="timer">
+				0:{{ '%02d'|format(remainingSeconds ?? timerDuration) }}</p>
 			<p class="font-semibold text-encre" data-assemblage-target="score">0 pts</p>
 		</div>
 
