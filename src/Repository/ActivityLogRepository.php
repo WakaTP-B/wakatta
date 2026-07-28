@@ -79,4 +79,24 @@ class ActivityLogRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * Recupere les Vocabulary trouves (result = success) dans cette session, pour le recap.
+     *
+     * @return Vocabulary[]
+     */
+    public function findSuccessVocabulariesForSession(Session $session): array
+    {
+        $activityLogs = $this->createQueryBuilder('a')
+            ->select('a', 'v')
+            ->join('a.vocabulary', 'v')
+            ->andWhere('a.session = :session')
+            ->andWhere('a.result = :result')
+            ->setParameter('session', $session)
+            ->setParameter('result', 'success')
+            ->getQuery()
+            ->getResult();
+
+        return array_map(fn(ActivityLog $log) => $log->getVocabulary(), $activityLogs);
+    }
 }

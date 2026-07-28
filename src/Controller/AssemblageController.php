@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Enum\DifficultyLevel;
+use App\Repository\ActivityLogRepository;
 use App\Repository\XpTransactionRepository;
 use App\Service\AssemblageAnswerChecker;
 use App\Service\AssemblageGenerator;
@@ -22,46 +23,58 @@ final class AssemblageController extends AbstractController
         Request $request,
         AssemblageGenerator $assemblageGenerator,
         SessionManager $sessionManager,
+        XpTransactionRepository $xpTransactionRepository,
+        EntityManagerInterface $entityManager
     ): Response {
         $levelParam = $request->query->get('level');
         $sessionIdParam = $request->query->get('session');
         $tilesParam = $request->query->get('tiles');
-
-        // Pas de niveau choisi -> modal de selection
-        if ($levelParam === null) {
-            return $this->render('activity/assemblage/index.html.twig', [
-                'showLevelModal' => true,
-            ]);
-        }
 
         try {
             $difficulty = DifficultyLevel::from($levelParam);
         } catch (\ValueError) {
             $this->addFlash('error', 'Merci de choisir un niveau avant de commencer.');
 
-            return $this->redirectToRoute('app_activity_assemblage');
+            return $this->redirectToRoute('app_dashboard');
         }
 
-        // Grille + session deja fixees dans l'URL (F5) -> on reconstruit a l'identique
+        // Grille + session deja fixees dans l'URL (F5) -> rebuild a l'identique
         if ($sessionIdParam !== null && $tilesParam !== null) {
             $session = $sessionManager->findOngoingSession((int) $sessionIdParam, $this->getUser());
 
             if ($session === null) {
-                return $this->redirectToRoute('app_activity_assemblage');
+                return $this->redirectToRoute('app_dashboard');
+            }
+
+            // Check cote serveur si session expiré
+            $elapsedSeconds = time() - $session->getStartedAt()->getTimestamp();
+            if ($elapsedSeconds >= 30) {
+                $sessionManager->closeSession($session);
+                $totalXp = $xpTransactionRepository->getTotalXpForSession($session);
+                $session->setTotalXp($totalXp);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_activity_assemblage_recap', [
+                    'session' => $session->getId(),
+                    'difficulty' => $difficulty->value,
+                ]);
             }
 
             $tileIds = array_map('intval', explode(',', $tilesParam));
             $grid = $assemblageGenerator->buildGridFromFixedTiles($difficulty, $tileIds);
 
+            // Temps restant reel, evite de reset le timer au F5
+            $remainingSeconds = 30 - $elapsedSeconds;
+
             return $this->render('activity/assemblage/index.html.twig', [
-                'showLevelModal' => false,
                 'grid' => $grid,
                 'session' => $session,
                 'difficulty' => $difficulty,
+                'remainingSeconds' => $remainingSeconds,
             ]);
         }
 
-        // Premiere generation : nouvelle session + nouvelle grille, on fixe tout dans l'URL
+        // New session + nouvelle grille, on fixe tout dans l'URL
         $grid = $assemblageGenerator->generateGrid($difficulty);
 
         if ($grid === null) {
@@ -107,10 +120,11 @@ final class AssemblageController extends AbstractController
             session: $session,
         );
 
-        return $this->render('activity/assemblage/_result_fragment.html.twig', [
+        return $this->json([
             'result' => $result['result'],
             'xpAmount' => $result['xpAmount'],
-            'vocabulary' => $result['vocabulary'],
+            'hiragana' => $result['vocabulary']?->getHiragana(),
+            'translation' => $result['vocabulary']?->getFrench(),
         ]);
     }
 
@@ -123,20 +137,49 @@ final class AssemblageController extends AbstractController
         EntityManagerInterface $entityManager,
     ): Response {
         $sessionIdParam = $request->request->get('sessionId');
+        $levelParam = $request->request->get('difficulty');
+
         $session = $sessionManager->getSessionForUser((int) $sessionIdParam, $this->getUser());
 
         if ($session === null) {
             throw $this->createNotFoundException();
         }
 
+        // Cloture session (timer expiré), calcul Xp total, redirect to recap
         $sessionManager->closeSession($session);
 
         $totalXp = $xpTransactionRepository->getTotalXpForSession($session);
         $session->setTotalXp($totalXp);
         $entityManager->flush();
 
-        return $this->json([
-            'totalXp' => $totalXp,
+        return $this->redirectToRoute('app_activity_assemblage_recap', [
+            'session' => $session->getId(),
+            'difficulty' => $levelParam,
+        ]);
+    }
+
+    #[Route('/hiragana/assemblage/recap', name: 'app_activity_assemblage_recap')]
+    #[IsGranted('ROLE_USER')]
+    public function recap(
+        Request $request,
+        SessionManager $sessionManager,
+        ActivityLogRepository $activityLogRepository,
+    ): Response {
+        $sessionId = (int) $request->query->get('session');
+        $difficulty = DifficultyLevel::from($request->query->get('difficulty'));
+        $session = $sessionManager->getSessionForUser($sessionId, $this->getUser());
+
+        if ($session === null) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+
+        $foundVocabularies = $activityLogRepository->findSuccessVocabulariesForSession($session);
+
+        return $this->render('activity/assemblage/recap.html.twig', [
+            'wordsFoundCount' => count($foundVocabularies),
+            'foundVocabularies' => $foundVocabularies,
+            'totalXp' => $session->getTotalXp(),
+            'difficulty' => $difficulty,
         ]);
     }
 }
