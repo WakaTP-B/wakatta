@@ -17,6 +17,8 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class AssemblageController extends AbstractController
 {
+    private const TIMER_SESSION_ASSEMBLAGE = 45;
+
     #[Route('/hiragana/assemblage', name: 'app_activity_assemblage')]
     #[IsGranted('ROLE_USER')]
     public function index(
@@ -48,7 +50,7 @@ final class AssemblageController extends AbstractController
 
             // Check cote serveur si session expiré
             $elapsedSeconds = time() - $session->getStartedAt()->getTimestamp();
-            if ($elapsedSeconds >= 30) {
+            if ($elapsedSeconds >= self::TIMER_SESSION_ASSEMBLAGE) {
                 $sessionManager->closeSession($session);
                 $totalXp = $xpTransactionRepository->getTotalXpForSession($session);
                 $session->setTotalXp($totalXp);
@@ -64,13 +66,14 @@ final class AssemblageController extends AbstractController
             $grid = $assemblageGenerator->buildGridFromFixedTiles($difficulty, $tileIds);
 
             // Temps restant reel, evite de reset le timer au F5
-            $remainingSeconds = 30 - $elapsedSeconds;
+            $remainingSeconds = self::TIMER_SESSION_ASSEMBLAGE - $elapsedSeconds;
 
             return $this->render('activity/assemblage/index.html.twig', [
                 'grid' => $grid,
                 'session' => $session,
                 'difficulty' => $difficulty,
                 'remainingSeconds' => $remainingSeconds,
+                'timerDuration' => self::TIMER_SESSION_ASSEMBLAGE,
             ]);
         }
 
