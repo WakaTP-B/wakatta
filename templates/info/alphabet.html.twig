@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Alphabet Hiragana - Wakatta!
+{% endblock %}
+
+{% block body %}
+	<p class="text-encre/50 text-sm font-semibold uppercase tracking-wide mb-1">Hiragana</p>
+	<h1 class="titre-page">Alphabet</h1>
+
+	<div class="grid grid-cols-5 gap-2 mb-6">
+		{% for row in grid %}
+			{% for romaji in row %}
+				{% if romaji is not null and hiraganaByRomaji[romaji] is defined %}
+					<div class="aspect-square flex flex-col items-center justify-center bg-white border-2 border-bleu-aiiro rounded-lg">
+						<span class="font-jp text-2xl">{{ hiraganaByRomaji[romaji].character }}</span>
+						<span class="text-xs text-encre/60">{{ romaji }}</span>
+					</div>
+				{% else %}
+					<div></div>
+				{% endif %}
+			{% endfor %}
+		{% endfor %}
+	</div>
+{% endblock %}
