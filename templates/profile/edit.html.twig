@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le profil - Wakatta!
+{% endblock %}
+
+{% block body %}
+	<div data-controller="delete-account">
+
+		<div class="flex items-center justify-between mb-4">
+			<h1 class="text-3xl font-bold font-title text-bleu-aiiro">{{ app.user.username }}</h1>
+			<button type="button" data-action="click->delete-account#open" class="text-sm font-bold text-encre rounded-lg px-4 border-4 border-encre text-center flex items-center justify-center" style="background-color: #A63328; height: 56px;">
+				Supprimer<br>le compte
+			</button>
+		</div>
+
+		<p class="text-encre/60">Formulaire de modification à venir.</p>
+
+		{# Backdrop #}
+		<div data-delete-account-target="backdrop" data-action="click->delete-account#close" class="hidden fixed inset-0 bg-encre/50 z-40"></div>
+
+		{# Modal #}
+		<div
+			data-delete-account-target="modal" class="hidden opacity-0 scale-95 transition-all duration-200 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-white rounded-lg shadow-lg p-6 w-80">
+
+			{# Ecran 1 : avertissement #}
+			<div data-delete-account-target="step1">
+				<p class="text-encre font-semibold text-center mb-6">
+					Voulez-vous supprimer votre compte ? Cette action est irréversible.
+				</p>
+				<div class="flex gap-3">
+					<button type="button" data-action="click->delete-account#close" class="flex-1 border-2 border-bleu-aiiro rounded-lg py-2 text-encre">
+						Non
+					</button>
+					<button type="button" data-action="click->delete-account#goToStep2" class="flex-1 bg-rouge-torii text-white rounded-lg py-2">
+						Oui
+					</button>
+				</div>
+			</div>
+
+			{# Ecran 2 : confirmation finale #}
+			<div data-delete-account-target="step2" class="hidden">
+				<p class="text-encre font-semibold text-center mb-2">
+					Dernière étape
+				</p>
+				<p class="text-encre/70 text-sm text-center mb-5">
+					Toute ta progression (XP, historique) sera définitivement perdue.
+				</p>
+
+				<form method="post" action="{{ path('app_profile_delete') }}">
+					{{ form_start(deleteAccountForm) }}
+
+					<label class="flex items-start gap-2 mb-5 text-sm text-encre bg-beige-washi rounded-lg p-3 border border-gris-pierre">
+						<input type="checkbox" data-delete-account-target="checkbox" data-action="change->delete-account#toggleSubmit" class="mt-1.5">
+						J'ai bien compris que cette action est irréversible
+					</label>
+
+					<div class="mb-5 w-full">
+						{{ form_label(deleteAccountForm.password, 'Mot de passe', {'label_attr': {'class': 'label-form'}}) }}
+						{{ form_widget(deleteAccountForm.password, {'attr': {'class': 'input-form', 'placeholder': 'Mot de passe...'}}) }}
+						{{ form_errors(deleteAccountForm.password) }}
+					</div>
+
+					<button type="submit" data-delete-account-target="submitBtn" disabled class="w-full text-white rounded-lg py-2 font-semibold disabled:opacity-40 disabled:cursor-not-allowed" style="background-color: #A63328;">
+						Valider la suppression
+					</button>
+
+					{{ form_end(deleteAccountForm) }}
+				</form>
+			</div>
+
+		</div>
+
+	</div>
+{% endblock %}
