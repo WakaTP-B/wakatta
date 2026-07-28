@@ -6,6 +6,7 @@ use App\Entity\Session;
 use App\Entity\User;
 use App\Repository\ActivityLogRepository;
 use App\Repository\SessionRepository;
+use App\Repository\XpTransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class SessionManager
@@ -68,20 +69,6 @@ final class SessionManager
     }
 
     /**
-     * Clôture la session si elle a atteint le nombre de questions prévu.
-     * À appeler après chaque réponse enregistrée.
-     */
-    public function closeSessionIfComplete(Session $session): void
-    {
-        $answeredCount = $this->activityLogRepository->countForSession($session);
-
-        if ($answeredCount >= self::QUESTIONS_PER_SESSION && $session->getEndedAt() === null) {
-            $session->setEndedAt(new \DateTimeImmutable());
-            $this->entityManager->flush();
-        }
-    }
-
-    /**
      * Cloture une session manuellement (timer expire, pas de compteur fixe).
      * Utilise par l'Assemblage, contrairement a closeSessionIfComplete (QCM/Completion).
      */
@@ -91,5 +78,32 @@ final class SessionManager
             $session->setEndedAt(new \DateTimeImmutable());
             $this->entityManager->flush();
         }
+    }
+
+    /**
+     * Cloture la session si elle a atteint le nombre de questions prévu.
+     * À appeler après chaque réponse enregistrée.
+     */
+    public function closeSessionIfComplete(Session $session): void
+    {
+        $answeredCount = $this->activityLogRepository->countForSession($session);
+
+        if ($answeredCount >= self::QUESTIONS_PER_SESSION) {
+            $this->closeSession($session);
+        }
+    }
+
+    /**
+     * Cloture la session et calcule/sauvegarde le total_xp en une seule fois.
+     * Factorise la logique commune entre AssemblageController::index() (session
+     * expiree detectee au F5) et terminer() (fin normale via le timer).
+     */
+    public function closeSessionAndSaveTotalXp(Session $session, XpTransactionRepository $xpTransactionRepository): void
+    {
+        $this->closeSession($session);
+
+        $totalXp = $xpTransactionRepository->getTotalXpForSession($session);
+        $session->setTotalXp($totalXp);
+        $this->entityManager->flush();
     }
 }

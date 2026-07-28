@@ -45,7 +45,6 @@ class VocabularyRepository extends ServiceEntityRepository
         return $vocabularies[array_rand($vocabularies)];
     }
 
-
     /**
      * Récupère un Vocabulary random pour distracteurs
      * Exclue mot correct, préviligie mots avec meme nbr de caractères

@@ -3,7 +3,7 @@ import { Controller } from '@hotwired/stimulus';
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static targets = ['tile', 'selection', 'romaji', 'translation', 'timer', 'score', 'finishForm']
-    static values = { sessionId: Number, difficulty: String }
+    static values = { sessionId: Number, difficulty: String, remainingSeconds: Number }
 
     selectedIds = []
     foundWords = []
@@ -11,6 +11,8 @@ export default class extends Controller {
     timeLeft = 30
 
     connect() {
+        this.timeLeft = this.remainingSecondsValue
+        this.timerTarget.textContent = this.formatTime(this.timeLeft)
         this.start()
     }
 

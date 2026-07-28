@@ -134,7 +134,6 @@ final class AssemblageController extends AbstractController
         Request $request,
         SessionManager $sessionManager,
         XpTransactionRepository $xpTransactionRepository,
-        EntityManagerInterface $entityManager,
     ): Response {
         $sessionIdParam = $request->request->get('sessionId');
         $levelParam = $request->request->get('difficulty');
@@ -146,11 +145,7 @@ final class AssemblageController extends AbstractController
         }
 
         // Cloture session (timer expiré), calcul Xp total, redirect to recap
-        $sessionManager->closeSession($session);
-
-        $totalXp = $xpTransactionRepository->getTotalXpForSession($session);
-        $session->setTotalXp($totalXp);
-        $entityManager->flush();
+        $sessionManager->closeSessionAndSaveTotalXp($session, $xpTransactionRepository);
 
         return $this->redirectToRoute('app_activity_assemblage_recap', [
             'session' => $session->getId(),
