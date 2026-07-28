@@ -43,7 +43,7 @@
 		</div>
 
 		{# La grille de choix #}
-		<div class="flex flex-wrap justify-start gap-3 mb-6" style="max-width: 320px;">
+		<div class="grid grid-cols-4 gap-x-3 gap-y-5 mb-6 w-full justify-items-center" style="max-width: 320px;">
 			{% for choice in question.choices %}
 				<button type="button" data-completion-target="choice" data-action="click->completion#select" data-completion-hiragana-id-param="{{ choice.id }}" class="w-15 h-15 flex items-center justify-center bg-white border-2 border-bleu-aiiro rounded-lg font-jp text-2xl">
 					{{ choice.character }}

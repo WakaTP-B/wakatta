@@ -60,7 +60,8 @@ class ReferenceDataFixtures extends Fixture
             'difficile' => ['success' => 15, 'failure' => -8],
         ];
 
-        foreach (['qcm', 'completion', 'assemblage'] as $activityKey) {
+        // // XpRule — QCM et Complétion
+        foreach (['qcm', 'completion'] as $activityKey) {
             foreach ($baremes as $difficultyKey => $xp) {
                 $xpRule = new XpRule();
                 $xpRule->setActivity($activityEntities[$activityKey]);
@@ -69,6 +70,16 @@ class ReferenceDataFixtures extends Fixture
                 $xpRule->setXpFailure($xp['failure']);
                 $manager->persist($xpRule);
             }
+        }
+
+        // XpRule — Assemblage (no penalty)
+        foreach ($baremes as $difficultyKey => $xp) {
+            $xpRule = new XpRule();
+            $xpRule->setActivity($activityEntities['assemblage']);
+            $xpRule->setDifficulty($difficultyEntities[$difficultyKey]);
+            $xpRule->setXpSuccess($xp['success']);
+            $xpRule->setXpFailure(0);
+            $manager->persist($xpRule);
         }
         $manager->flush();
     }

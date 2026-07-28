@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Hiragana - Assemblage - Wakatta!
+{% endblock %}
+
+{% block stylesheets %}
+	{{ parent() }}
+	<meta name="turbo-cache-control" content="no-cache">
+{% endblock %}
+
+{% block body %}
+	<p class="text-encre/50 text-sm font-semibold uppercase tracking-wide mb-1">Hiragana</p>
+	<h1 class="titre-page">Assemblage</h1>
+
+	<div
+		class="flex flex-col items-center" data-controller="assemblage" data-assemblage-session-id-value="{{ session.id }}" data-assemblage-difficulty-value="{{ difficulty.value }}" data-assemblage-remaining-seconds-value="{{ remainingSeconds }}">
+
+		{# Timer + score #}
+		<div class="w-full flex justify-between items-center mb-4" style="max-width: 320px;">
+			<p class="font-semibold text-bleu-aiiro" data-assemblage-target="timer">
+				0:{{ '%02d'|format(remainingSeconds ?? 30) }}</p>
+			<p class="font-semibold text-encre" data-assemblage-target="score">0 pts</p>
+		</div>
+
+		{# Bloc placeholder : traduction du mot trouve, vide par defaut #}
+		<div class="bg-white rounded-lg shadow-sm border border-gris-pierre px-6 py-3 text-center mb-3 w-full min-h-14 flex items-center justify-center" style="max-width: 320px;">
+			<p class="text-encre font-semibold" data-assemblage-target="translation"></p>
+		</div>
+
+		{# Zone de selection en cours : hiragana selectionnes + romaji temps reel #}
+		<div class="bg-white rounded-lg shadow-sm border border-gris-pierre px-6 py-3 text-center mb-6 w-full min-h-24 flex flex-col justify-center" style="max-width: 320px;">
+			<p class="font-jp text-3xl mb-1" data-assemblage-target="selection"></p>
+			{% if grid.showRomaji %}
+				<p class="text-encre/60" data-assemblage-target="romaji"></p>
+			{% endif %}
+		</div>
+
+		{# Grille des hiragana disponibles #}
+		<div class="grid grid-cols-4 gap-x-3 gap-y-5 mb-6 w-full justify-items-center" style="max-width: 320px;">
+			{% for tile in grid.tiles %}
+				<button type="button" data-assemblage-target="tile" data-action="click->assemblage#select" data-assemblage-hiragana-id-param="{{ tile.id }}" data-assemblage-character-param="{{ tile.character }}" data-assemblage-romaji-param="{{ tile.romaji }}" class="w-15 h-15 flex items-center justify-center bg-white border-2 border-bleu-aiiro rounded-lg font-jp text-2xl">
+					{{ tile.character }}
+				</button>
+			{% endfor %}
+		</div>
+
+		<div style="width: 320px;">
+			{% include 'components/_toolbar.html.twig' with {
+            buttons: [
+                {icon: 'reset', action: 'assemblage#reset', label: 'Recommencer'},
+                {icon: 'undo', action: 'assemblage#undo', label: 'Annuler'},
+            ],
+            validate_action: 'assemblage#validate',
+            validate_label: 'Valider',
+            group_icons: true,
+        } %}
+		</div>
+
+		<form method="post" action="{{ path('app_activity_assemblage_terminer') }}" data-assemblage-target="finishForm" class="hidden">
+			<input type="hidden" name="sessionId" value="{{ session.id }}">
+			<input type="hidden" name="difficulty" value="{{ difficulty.value }}">
+		</form>
+	</div>
+
+{% endblock %}
