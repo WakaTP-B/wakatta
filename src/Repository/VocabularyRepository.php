@@ -118,6 +118,24 @@ class VocabularyRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retourne tous les Vocabulary dans la fourchette de longueur donnee.
+     * Utilise par selectWordsByExpansion pour le pool complet de candidats.
+     *
+     * @return Vocabulary[]
+     */
+    public function findAllVocabularyByHiraganaLength(int $min, int $max): array
+    {
+        return $this->createQueryBuilder('v')
+            ->join('v.vocabularyHiraganas', 'vh')
+            ->groupBy('v.id')
+            ->having('COUNT(vh.id) BETWEEN :min AND :max')
+            ->setParameter('min', $min)
+            ->setParameter('max', $max)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Cherche le Vocabulary qui match exactement cette chaine hiragana.
      * @return Vocabulary|null
      */
@@ -128,5 +146,41 @@ class VocabularyRepository extends ServiceEntityRepository
             ->setParameter('hiragana', $hiragana)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * Trouve les mots dont TOUS les hiragana sont dans le set fourni.
+     * Utilise : expansion iterative de la grille (couverture maximale).
+     *
+     * @param string[] $romajiSet
+     * @return Vocabulary[]
+     */
+    public function findVocabularyComposableFrom(array $romajiSet, int $minLength, int $maxLength): array
+    {
+        // Verifie que TOUTES les parts du mot sont dans le romajiSet :
+        // COUNT(parts dans le set) = COUNT(toutes les parts) = longueur du mot
+        // Le LEFT JOIN + CASE permet de compter sans filtrer les lignes avant GROUP BY
+        $qb = $this->createQueryBuilder('v');
+
+        return $qb
+            ->join('v.vocabularyHiraganas', 'vh')
+            ->join('vh.hiragana', 'h')
+            ->groupBy('v.id')
+            ->having(
+                $qb->expr()->andX(
+                    // Toutes les parts du mot sont dans le romajiSet
+                    $qb->expr()->eq(
+                        'SUM(CASE WHEN h.romaji IN (:romajiSet) THEN 1 ELSE 0 END)',
+                        'COUNT(vh.id)'
+                    ),
+                    // Dans la fourchette de longueur
+                    $qb->expr()->between('COUNT(vh.id)', ':min', ':max')
+                )
+            )
+            ->setParameter('romajiSet', $romajiSet)
+            ->setParameter('min', $minLength)
+            ->setParameter('max', $maxLength)
+            ->getQuery()
+            ->getResult();
     }
 }

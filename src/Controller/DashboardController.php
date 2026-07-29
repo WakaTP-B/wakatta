@@ -20,21 +20,29 @@ final class DashboardController extends AbstractController
             'label' => 'Vocabulaire',
             'route' => 'app_activity_vocabulaire',
             'availableDifficulties' => ['facile', 'moyen', 'difficile'],
+            'image' => 'module-vocabulaire.png',
+            'description' => 'Apprends à reconnaître des mots',
         ],
         'Hiragana Calligraphie' => [
             'label' => 'Hiragana - Calligraphie',
             'route' => 'app_activity_calligraphie',
             'availableDifficulties' => [],
+            'image' => 'module-calligraphie.png',
+            'description' => 'Apprends à dessiner les hiragana',
         ],
         'Hiragana Complétion' => [
             'label' => 'Hiragana - Complétion',
             'route' => 'app_activity_completion',
             'availableDifficulties' => ['facile', 'moyen', 'difficile'],
+            'image' => 'module-completion.png',
+            'description' => 'Apprends à compléter les hiragana manquants',
         ],
         'Hiragana Assemblage' => [
             'label' => 'Hiragana - Assemblage',
             'route' => 'app_activity_assemblage',
             'availableDifficulties' => ['facile', 'moyen', 'difficile'],
+            'image' => 'module-assemblage.png',
+            'description' => 'Apprends à assembler les hiragana pour former des mots',
         ],
     ];
 
@@ -63,6 +71,8 @@ final class DashboardController extends AbstractController
                 'label' => $config['label'],
                 'route' => $config['route'],
                 'availableDifficulties' => $config['availableDifficulties'] ?? [],
+                'image' => $config['image'] ?? null,
+                'description' => $config['description'] ?? '',
                 'progression' => $levelCalculator->calculProgress($xpForActivity),
             ];
         }

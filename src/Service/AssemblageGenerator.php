@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Dto\AssemblageGrid;
 use App\Entity\Hiragana;
+use App\Entity\Vocabulary;
 use App\Enum\DifficultyLevel;
 use App\Repository\HiraganaGroupRepository;
 use App\Repository\HiraganaRepository;
@@ -28,7 +29,6 @@ final class AssemblageGenerator
         'difficile' => 8,
     ];
 
-    
     public function __construct(
         private readonly VocabularyRepository $vocabularyRepository,
         private readonly HiraganaRepository $hiraganaRepository,
@@ -39,22 +39,10 @@ final class AssemblageGenerator
     {
         [$min, $max] = self::LENGTH_RANGES[$difficulty->value];
 
-        // Tirage des Vocabulary, sans doublons
-        $vocabularies = [];
-        $excludeIds = [];
-        for ($i = 0; $i < self::WORDS_PER_GRID; $i++) {
-            $vocabulary = $this->vocabularyRepository->findVocabularyByHiraganaLength($min, $max, $excludeIds);
+        // Expansion iterative : mots partageant le maximum d'hiragana
+        $vocabularies = $this->selectWordsByExpansion($difficulty, $min, $max);
 
-            // if épuisé, on stop
-            if ($vocabulary === null) {
-                break;
-            }
-
-            $vocabularies[] = $vocabulary;
-            $excludeIds[] = $vocabulary->getId();
-        }
-
-        if (empty($vocabularies)) {
+        if ($vocabularies === null) {
             return null;
         }
 
@@ -83,6 +71,94 @@ final class AssemblageGenerator
             showRomaji: $difficulty === DifficultyLevel::FACILE,
             tiles: $tiles,
         );
+    }
+
+    /**
+     * Selectionne WORDS_PER_GRID mots par expansion iterative du set d'hiragana.
+     * Algo : mot pivot aleatoire → cherche mots composables depuis son alphabet →
+     * si insuffisant, etend l'alphabet avec un nouveau mot et recommence.
+     * Garantit que la grille est dense (tuiles partagees entre plusieurs mots).
+     *
+     * @return Vocabulary[]|null
+     */
+    private function selectWordsByExpansion(DifficultyLevel $difficulty, int $min, int $max): ?array
+    {
+        // Tous les candidats possibles pour cette difficulte
+        $candidates = $this->vocabularyRepository->findAllVocabularyByHiraganaLength($min, $max);
+
+        if (count($candidates) < self::WORDS_PER_GRID) {
+            return null;
+        }
+
+        // Etape 1 : mot pivot aleatoire
+        $pivot = $candidates[array_rand($candidates)];
+
+        // Set initial d'hiragana depuis les parts du pivot
+        $romajiSet = array_map(
+            fn($vh) => $vh->getHiragana()->getRomaji(),
+            $pivot->getVocabularyHiraganas()->toArray()
+        );
+
+        $selectedWords = [$pivot];
+        $excludeIds = [$pivot->getId()];
+
+        // Expansion iterative, securite anti-boucle infinie
+        $maxIterations = 20;
+        $iterations = 0;
+
+        while (count($selectedWords) < self::WORDS_PER_GRID && $iterations < $maxIterations) {
+            $iterations++;
+
+            // Cherche les mots composables depuis le set d'hiragana actuel
+            $composable = $this->vocabularyRepository->findVocabularyComposableFrom(
+                $romajiSet,
+                $min,
+                $max
+            );
+
+            // Retire ceux deja selectionnes
+            $composable = array_values(array_filter(
+                $composable,
+                fn($v) => !in_array($v->getId(), $excludeIds, true)
+            ));
+
+            if (!empty($composable)) {
+                // Prend un mot composable au hasard
+                $next = $composable[array_rand($composable)];
+                $selectedWords[] = $next;
+                $excludeIds[] = $next->getId();
+            } else {
+                // Plus de mots composables -> expansion du set avec un nouveau mot
+                $remaining = array_values(array_filter(
+                    $candidates,
+                    fn($v) => !in_array($v->getId(), $excludeIds, true)
+                ));
+
+                // pas assez de vocabulaire
+                if (empty($remaining)) {
+                    return null;
+                }
+
+                $expansion = $remaining[array_rand($remaining)];
+                $excludeIds[] = $expansion->getId();
+
+                // Etend le set d'hiragana avec les parts du mot d'expansion
+                $newRomaji = array_map(
+                    fn($vh) => $vh->getHiragana()->getRomaji(),
+                    $expansion->getVocabularyHiraganas()->toArray()
+                );
+                $romajiSet = array_unique(array_merge($romajiSet, $newRomaji));
+
+                // Ce mot d'expansion compte aussi comme mot selectionne
+                $selectedWords[] = $expansion;
+            }
+        }
+
+        if (count($selectedWords) < self::WORDS_PER_GRID) {
+            return null;
+        }
+
+        return $selectedWords;
     }
 
     /**

@@ -25,11 +25,12 @@
 			{% for module in modules %}
 				{% if module.availableDifficulties is not empty %}
 					<button type="button" class="block w-full text-left bg-white rounded-lg overflow-hidden shadow-sm border border-gris-pierre" data-action="click->level-select#open" data-level-select-route-param="{{ path(module.route) }}" data-level-select-label-param="{{ module.label }}" data-level-select-available-param="{{ module.availableDifficulties|json_encode }}">
-						<div class="h-32 bg-gris-pierre flex items-center justify-center text-encre/40 text-sm">
-							Image du module
+						<div class="h-32 bg-gris-pierre overflow-hidden">
+							<img src="{{ asset('images/modules/' ~ module.image) }}" alt="{{ module.label }}" class="w-full h-full object-cover">
 						</div>
 						<div class="p-4">
-							<h3 class="font-semibold text-encre mb-2">{{ module.label }}</h3>
+							<h3 class="font-semibold text-encre mb-1">{{ module.label }}</h3>
+							<p class="text-sm text-encre/70 mb-2">{{ module.description }}</p>
 							{% include 'dashboard/_progress_bar.html.twig' with {
                                 label: 'Niv. ' ~ module.progression.level,
                                 current: module.progression.xpCurrentLevel,
@@ -40,11 +41,12 @@
 					</button>
 				{% else %}
 					<a href="{{ path(module.route) }}" class="block bg-white rounded-lg overflow-hidden shadow-sm border border-gris-pierre">
-						<div class="h-32 bg-gris-pierre flex items-center justify-center text-encre/40 text-sm">
-							Image du module
+						<div class="h-32 bg-gris-pierre overflow-hidden">
+							<img src="{{ asset('images/modules/' ~ module.image) }}" alt="{{ module.label }}" class="w-full h-full object-cover">
 						</div>
 						<div class="p-4">
-							<h3 class="font-semibold text-encre mb-2">{{ module.label }}</h3>
+							<h3 class="font-semibold text-encre mb-1">{{ module.label }}</h3>
+							<p class="text-sm text-encre/70 mb-2">{{ module.description }}</p>
 							{% include 'dashboard/_progress_bar.html.twig' with {
                                 label: 'Niv. ' ~ module.progression.level,
                                 current: module.progression.xpCurrentLevel,
