@@ -13,7 +13,7 @@ use App\Repository\DifficultyRepository;
 use App\Repository\XpRuleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class QcmAnswerChecker
+final class CompletionAnswerChecker
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -23,33 +23,30 @@ final class QcmAnswerChecker
     ) {}
 
     /**
-     * Check la réponse donnée par le joueur, enregistre le résultat en BDD
-     * (ActivityLog + XpTransaction) et retourne si c'était correct + l'XP gagné/perdu.
+     * Vérifie la séquence de hiragana soumise, enregistre le résultat en BDD
      *
+     * @param int[] $submittedHiraganaIds La séquence proposée par le joueur, dans l'ordre cliqué
      * @return array{isCorrect: bool, xpAmount: int}
      */
     public function checkAnswer(
         User $user,
         Vocabulary $vocabulary,
         DifficultyLevel $difficulty,
-        string $submittedAnswer,
+        array $submittedHiraganaIds,
         Session $session,
     ): array {
-        // Check la réponse directement en BDD
-        $correctAnswer = $difficulty === DifficultyLevel::FACILE
-            ? $vocabulary->getFrench()
-            : $vocabulary->getHiragana();
+        $vocabularyHiraganas = $vocabulary->getVocabularyHiraganas()->toArray();
+        usort($vocabularyHiraganas, fn($a, $b) => $a->getPosition() <=> $b->getPosition());
+        $correctIds = array_map(fn($vh) => $vh->getHiragana()->getId(), $vocabularyHiraganas);
 
-        $isCorrect = $submittedAnswer === $correctAnswer;
+        $isCorrect = $submittedHiraganaIds === $correctIds;
 
-        // On récupère  Activity / Difficulty / XpRule
-        $activity = $this->activityRepository->findOneBy(['name' => 'QCM Vocabulaire']);
+        $activity = $this->activityRepository->findOneBy(['name' => 'Hiragana Complétion']);
         $difficultyEntity = $this->difficultyRepository->findOneBy(['name' => $difficulty->value]);
         $xpRule = $this->xpRuleRepository->findByActivityAndDifficulty($activity, $difficultyEntity);
 
         $xpAmount = $isCorrect ? $xpRule->getXpSuccess() : $xpRule->getXpFailure();
 
-        // Création ActivityLog
         $activityLog = new ActivityLog();
         $activityLog->setPlayer($user);
         $activityLog->setActivity($activity);
@@ -59,7 +56,6 @@ final class QcmAnswerChecker
         $activityLog->setResult($isCorrect ? 'success' : 'failure');
         $activityLog->setCreatedAt(new \DateTimeImmutable());
 
-        // Création XpTransaction
         $xpTransaction = new XpTransaction();
         $xpTransaction->setPlayer($user);
         $xpTransaction->setActivityLog($activityLog);
@@ -73,7 +69,7 @@ final class QcmAnswerChecker
         return [
             'isCorrect' => $isCorrect,
             'xpAmount' => $xpAmount,
-            'correctAnswer' => $correctAnswer,
+            'correctWord' => $vocabulary->getHiragana(),
             'correctRomaji' => $vocabulary->getRomaji(),
         ];
     }

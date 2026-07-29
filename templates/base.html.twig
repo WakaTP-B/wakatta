@@ -27,8 +27,8 @@
 		{% set frankenphpHotReload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
 		{% if frankenphpHotReload %}
 			<meta name="frankenphp-hot-reload:url" content="{{ frankenphpHotReload }}">
-		 	<script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
-			<script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
+		 <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
+			 <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
 		{% endif %}
 	</head>
 	<body data-controller="menu">
@@ -63,11 +63,23 @@
 		</header>
 
 		<div class="pt-16">
-			<div class="px-4 pt-4 pb-10">
-			 	{% block body %}{% endblock %}
+			<div class="px-4 pt-4 pb-10 max-w-md mx-auto">
+				{% set flashErrors = app.flashes('error') %}
+				{% set flashSuccess = app.flashes('success') %}
+
+				{% for message in flashErrors %}
+					<p class="text-rouge-torii text-sm font-semibold text-center mb-4">{{ message }}</p>
+				{% endfor %}
+
+				{% if app.request.attributes.get('_route') != 'app_profile_edit' %}
+					{% for message in flashSuccess %}
+						<p class="text-bleu-aiiro text-sm font-semibold text-center mb-4">{{ message }}</p>
+					{% endfor %}
+				{% endif %}
+				{% block body %}{% endblock %}
 			</div>
 		</div>
 
-			{% include '_menu_drawer.html.twig' %}
-		</body>
-	</html>
+		{% include '_menu_drawer.html.twig' %}
+	</body>
+</html>

@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Récapitulatif - Wakatta!
+{% endblock %}
+
+{% block body %}
+	<div class="px-4 pt-4 w-full max-w-sm text-center">
+
+		<p class="titre-page mb-4">Partie terminée !</p>
+
+		<div class="bg-white rounded-lg shadow-sm border border-gris-pierre p-6 mb-6">
+			<p class="text-encre mb-2">
+				<span class="font-bold text-2xl">{{ wordsFoundCount }}</span>
+				mot{{ wordsFoundCount > 1 ? 's' : '' }}
+				trouvé{{ wordsFoundCount > 1 ? 's' : '' }}
+			</p>
+
+			<p class="text-sm text-encre/60">
+				{% if totalXp >= 0 %}+{{ totalXp }}
+				{% else %}
+					{{ totalXp }}
+				{% endif %}
+				XP au total
+			</p>
+		</div>
+
+		{% if foundVocabularies is not empty %}
+			<div class="bg-white rounded-lg shadow-sm border border-gris-pierre p-4 mb-6 text-left">
+				<p class="font-semibold text-encre mb-3">Mots trouvés</p>
+				<div class="space-y-3">
+					{% for vocabulary in foundVocabularies %}
+						<div class="flex items-center justify-between border-b border-gris-pierre pb-2 last:border-0 last:pb-0">
+							<div>
+								<p class="font-jp text-lg">{{ vocabulary.hiragana }}</p>
+								<p class="text-sm text-encre/60">{{ vocabulary.romaji }}</p>
+							</div>
+							<p class="text-encre font-medium">{{ vocabulary.french }}</p>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		{% endif %}
+
+		<div class="space-y-3">
+			<a href="{{ path('app_activity_assemblage', {level: difficulty.value}) }}" class="btn w-full block">
+				Rejouer
+			</a>
+
+			<a href="{{ path('app_dashboard') }}" class="block w-full text-center border-2 border-bleu-aiiro rounded-lg py-2 text-encre">
+				Retour au dashboard
+			</a>
+		</div>
+
+	</div>
+{% endblock %}
