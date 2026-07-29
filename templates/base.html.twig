@@ -63,11 +63,18 @@
 		</header>
 
 		<div class="pt-16">
-			<div class="px-4 pt-4 pb-10 max-w-md mx-auto"> 
-			{% block body %}{% endblock %}
+			<div class="px-4 pt-4 pb-10 max-w-md mx-auto">
+				{% for message in app.flashes('error') %}
+					<p class="text-rouge-torii text-sm font-semibold text-center mb-4">{{ message }}</p>
+				{% endfor %}
+
+				{% for message in app.flashes('success') %}
+					<p class="text-bleu-aiiro text-sm font-semibold text-center mb-4">{{ message }}</p>
+				{% endfor %}
+				{% block body %}{% endblock %}
 			</div>
 		</div>
 
-			{% include '_menu_drawer.html.twig' %}
-		</body>
-	</html>
+		{% include '_menu_drawer.html.twig' %}
+	</body>
+</html>
