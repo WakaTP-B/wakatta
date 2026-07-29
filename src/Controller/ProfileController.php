@@ -12,12 +12,10 @@ use App\Service\AccountEditor;
 use App\Service\LevelCalculator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class ProfileController extends AbstractController
@@ -59,56 +57,50 @@ final class ProfileController extends AbstractController
         ]);
     }
 
-    #[Route('/profil/modifier', name: 'app_profile_edit')]
+    #[Route('/profil/modifier', name: 'app_profile_edit', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_USER')]
-    public function edit(): Response
+    public function edit(Request $request, AccountEditor $accountEditor): Response
     {
+        $editProfileForm = $this->createForm(EditProfileFormType::class);
+        $editProfileForm->handleRequest($request);
+
+        $passwordError = null;
+        $passwordChangeAttempted = false;
+
+        if ($editProfileForm->isSubmitted() && $editProfileForm->isValid()) {
+            $newEmail = $editProfileForm->get('email')->getData();
+            $newPlainPassword = $editProfileForm->get('plainPassword')->getData();
+            $currentPassword = $editProfileForm->get('currentPassword')->getData();
+
+            if ($newEmail !== null || $newPlainPassword !== null) {
+                try {
+                    $accountEditor->updateProfile($this->getUser(), $newEmail, $newPlainPassword, $currentPassword);
+
+                    $this->addFlash('success', 'Votre compte a été mis à jour.');
+
+                    return $this->redirectToRoute('app_profile_edit');
+                } catch (BadCredentialsException $e) {
+                    $passwordError = 'Mot de passe actuel incorrect.';
+                    $passwordChangeAttempted = $newPlainPassword !== null;
+                }
+            }
+        }
+
         return $this->render('profile/edit.html.twig', [
             'deleteAccountForm' => $this->createForm(DeleteAccountFormType::class),
-            'editProfileForm' => $this->createForm(EditProfileFormType::class),
+            'editProfileForm' => $editProfileForm,
             'usernameForm' => $this->createForm(UsernameFormType::class, $this->getUser()),
+            'passwordError' => $passwordError,
+            'passwordChangeAttempted' => $passwordChangeAttempted,
         ]);
-    }
-
-    #[Route('/profil/modifier/compte', name: 'app_profile_edit_submit', methods: ['POST'])]
-    #[IsGranted('ROLE_USER')]
-    public function editSubmit(
-        Request $request,
-        AccountEditor $accountEditor,
-        CsrfTokenManagerInterface $csrfTokenManager,
-    ): JsonResponse {
-        $form = $this->createForm(EditProfileFormType::class);
-        $form->handleRequest($request);
-
-        if (!$form->isSubmitted() || !$form->isValid()) {
-            return $this->json(['success' => false, 'message' => 'Merci de vérifier les champs saisis.'], 422);
-        }
-
-        $newEmail = $form->get('email')->getData();
-        $newPlainPassword = $form->get('plainPassword')->getData();
-        $currentPassword = $form->get('currentPassword')->getData();
-
-        if ($newEmail === null && $newPlainPassword === null) {
-            return $this->json(['success' => false, 'message' => 'Aucune modification à appliquer.'], 422);
-        }
-
-        try {
-            $accountEditor->updateProfile($this->getUser(), $newEmail, $newPlainPassword, $currentPassword);
-        } catch (BadCredentialsException $e) {
-            return $this->json([
-                'success' => false,
-                'message' => 'Mot de passe actuel incorrect.',
-                'csrfToken' => $csrfTokenManager->getToken('edit_profile_form')->getValue(),
-            ], 422);
-        }
-
-        return $this->json(['success' => true, 'message' => 'Votre compte a été mis à jour.']);
     }
 
     #[Route('/profil/modifier/username', name: 'app_profile_edit_username', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
-    public function editUsername(Request $request, AccountEditor $accountEditor): Response
-    {
+    public function editUsername(
+        Request $request,
+        AccountEditor $accountEditor
+    ): Response {
         $form = $this->createForm(UsernameFormType::class, $this->getUser());
         $form->handleRequest($request);
 

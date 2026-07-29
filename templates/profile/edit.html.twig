@@ -8,16 +8,18 @@
 
 		<div class="flex items-center justify-between mb-4">
 			<div class="flex items-center gap-2">
-				<form data-edit-profile-target="usernameForm" method="post" action="{{ path('app_profile_edit_username') }}">
-					{{ form_start(usernameForm) }}
-					{{ form_widget(usernameForm.username, {'attr': {
-							'class': 'text-3xl font-bold font-title text-bleu-aiiro bg-transparent border-0 outline-none p-0',
-        					'readonly': true,
-							'data-edit-profile-target': 'usernameInput',
-							'data-action': 'blur->edit-profile#submitUsername keydown.enter->edit-profile#submitUsername input->edit-profile#resizeUsernameInput'}}) }}
+				{{ form_start(usernameForm, {
+					'action': path('app_profile_edit_username'),
+					'method': 'POST',
+					'attr': {'data-edit-profile-target': 'usernameForm'}
+				}) }}
+				{{ form_widget(usernameForm.username, {'attr': {
+						'class': 'text-3xl font-bold font-title text-bleu-aiiro bg-transparent border-0 outline-none p-0',
+						'readonly': true,
+						'data-edit-profile-target': 'usernameInput',
+						'data-action': 'blur->edit-profile#submitUsername keydown.enter->edit-profile#submitUsername input->edit-profile#resizeUsernameInput'}}) }}
+				{{ form_end(usernameForm) }}
 
-					{{ form_end(usernameForm) }}
-				</form>
 				<button type="button" data-action="click->edit-profile#toggleUsernameEdit" class="cursor-pointer">
 					<svg data-edit-profile-target="editIcon" width="18" height="18" viewbox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M2 18H16C17.1 18 18 17.1 18 16V9H16V16H2V2H9V0H2C0.9 0 0 0.9 0 2V16C0 17.1 0.9 18 2 18Z" fill="black"/>
@@ -36,39 +38,57 @@
 
 		<p class="text-sm text-encre/60 mb-6">{{ app.user.email }}</p>
 
-		<form data-edit-profile-target="editForm" data-action="submit->edit-profile#submitEditForm" method="post" action="{{ path('app_profile_edit_submit') }}">
-			{{ form_start(editProfileForm) }}
+		{{ form_start(editProfileForm, {
+			'action': path('app_profile_edit'),
+			'method': 'POST',
+			'attr': {
+				'data-edit-profile-target': 'editForm',
+				'data-turbo': 'false',
+				'data-action': 'submit->edit-profile#submitEditForm'
+			}
+		}) }}
 
-			<div class="mb-3 w-full">
-				{{ form_label(editProfileForm.email.first, 'Nouveau mail', {'label_attr': {'class': 'label-form'}}) }}
-				{{ form_widget(editProfileForm.email.first, {'attr': {'class': 'input-form'}}) }}
-				{{ form_errors(editProfileForm.email.first) }}
-			</div>
+		<div class="mb-3 w-full">
+			{{ form_label(editProfileForm.email.first, 'Nouveau mail', {'label_attr': {'class': 'label-form'}}) }}
+			{{ form_widget(editProfileForm.email.first, {'attr': {'class': 'input-form'}}) }}
+		</div>
 
-			<div class="mb-3 w-full">
-				{{ form_label(editProfileForm.email.second, 'Confirmer nouveau mail', {'label_attr': {'class': 'label-form'}}) }}
-				{{ form_widget(editProfileForm.email.second, {'attr': {'class': 'input-form'}}) }}
-				{{ form_errors(editProfileForm.email) }}
-			</div>
+		<div class="mb-3 w-full">
+			{{ form_label(editProfileForm.email.second, 'Confirmer nouveau mail', {'label_attr': {'class': 'label-form'}}) }}
+			{{ form_widget(editProfileForm.email.second, {'attr': {'class': 'input-form'}}) }}
+		</div>
 
-			<div class="mb-3 w-full">
-				{{ form_label(editProfileForm.plainPassword.first, 'Changer mot de passe', {'label_attr': {'class': 'label-form'}}) }}
-				{{ form_widget(editProfileForm.plainPassword.first, {'attr': {'class': 'input-form'}}) }}
-				{{ form_errors(editProfileForm.plainPassword.first) }}
-			</div>
+		<div class="mb-3 w-full">
+			{{ form_label(editProfileForm.plainPassword.first, 'Changer mot de passe', {'label_attr': {'class': 'label-form'}}) }}
+			{{ form_widget(editProfileForm.plainPassword.first, {'attr': {'class': 'input-form'}}) }}
+		</div>
 
-			<div class="mb-6 w-full">
-				{{ form_label(editProfileForm.plainPassword.second, 'Confirmer nouveau mot de passe', {'label_attr': {'class': 'label-form'}}) }}
-				{{ form_widget(editProfileForm.plainPassword.second, {'attr': {'class': 'input-form'}}) }}
-				{{ form_errors(editProfileForm.plainPassword) }}
-			</div>
+		<div class="mb-6 w-full">
+			{{ form_label(editProfileForm.plainPassword.second, 'Confirmer nouveau mot de passe', {'label_attr': {'class': 'label-form'}}) }}
+			{{ form_widget(editProfileForm.plainPassword.second, {'attr': {'class': 'input-form'}}) }}
+		</div>
 
-			{{ form_widget(editProfileForm.currentPassword, {'attr': {'class': 'hidden', 'data-edit-profile-target': 'currentPasswordInput'}}) }}
+		{{ form_widget(editProfileForm.currentPassword, {'attr': {'class': 'hidden', 'data-edit-profile-target': 'currentPasswordInput'}}) }}
 
-			<button type="submit" class="btn w-full">Valider</button>
+		<div class="mb-6 text-rouge-torii text-sm font-semibold text-center">
+			<p data-edit-profile-target="formError" class="hidden"></p>
+			{{ form_errors(editProfileForm.email.first) }}
+			{{ form_errors(editProfileForm.email) }}
+			{{ form_errors(editProfileForm.plainPassword.first) }}
+			{{ form_errors(editProfileForm.plainPassword) }}
 
-			{{ form_end(editProfileForm) }}
-		</form>
+			{% if passwordChangeAttempted %}
+				<p>Mot de passe actuel incorrect. Merci de ressaisir votre nouveau mot de passe.</p>
+			{% endif %}
+
+			{% for message in flashSuccess %}
+				<p data-edit-profile-target="flashSuccess" class="text-bleu-aiiro">{{ message }}</p>
+			{% endfor %}
+		</div>
+
+		<button type="submit" class="btn w-full">Valider</button>
+
+		{{ form_end(editProfileForm) }}
 
 		{# Modal mot de passe actuel #}
 		<div data-edit-profile-target="backdrop" data-action="click->edit-profile#closeModal" class="hidden fixed inset-0 bg-encre/50 z-40"></div>
@@ -79,8 +99,8 @@
 			</p>
 
 			<div class="mb-4 w-full">
-				<input type="password" data-edit-profile-target="confirmPasswordInput" placeholder="Mot de passe actuel..." class="input-form">
-				<p data-edit-profile-target="modalError" class="hidden text-rouge-torii text-sm font-semibold mt-2"></p>
+				<input type="password" data-edit-profile-target="confirmPasswordInput" data-action="keydown.enter->edit-profile#confirmPassword" placeholder="Mot de passe actuel..." class="input-form">
+				<p data-edit-profile-target="modalError" class="text-rouge-torii text-sm font-semibold mt-2">{{ passwordChangeAttempted ? '' : passwordError }}</p>
 			</div>
 
 			<button type="button" data-action="click->edit-profile#confirmPassword" class="btn w-full">
@@ -116,26 +136,27 @@
 					Toute ta progression (XP, historique) sera définitivement perdue.
 				</p>
 
-				<form method="post" action="{{ path('app_profile_delete') }}">
-					{{ form_start(deleteAccountForm) }}
+				{{ form_start(deleteAccountForm, {
+					'action': path('app_profile_delete'),
+					'method': 'POST'
+				}) }}
 
-					<label class="flex items-start gap-2 mb-5 text-sm text-encre bg-beige-washi rounded-lg p-3 border border-gris-pierre">
-						<input type="checkbox" data-delete-account-target="checkbox" data-action="change->delete-account#toggleSubmit" class="mt-1.5">
-						J'ai bien compris que cette action est irréversible
-					</label>
+				<label class="flex items-start gap-2 mb-5 text-sm text-encre bg-beige-washi rounded-lg p-3 border border-gris-pierre">
+					<input type="checkbox" data-delete-account-target="checkbox" data-action="change->delete-account#toggleSubmit" class="mt-1.5">
+					J'ai bien compris que cette action est irréversible
+				</label>
 
-					<div class="mb-5 w-full">
-						{{ form_label(deleteAccountForm.password, 'Mot de passe', {'label_attr': {'class': 'label-form'}}) }}
-						{{ form_widget(deleteAccountForm.password, {'attr': {'class': 'input-form', 'placeholder': 'Mot de passe...'}}) }}
-						{{ form_errors(deleteAccountForm.password) }}
-					</div>
+				<div class="mb-5 w-full">
+					{{ form_label(deleteAccountForm.password, 'Mot de passe', {'label_attr': {'class': 'label-form'}}) }}
+					{{ form_widget(deleteAccountForm.password, {'attr': {'class': 'input-form', 'placeholder': 'Mot de passe...'}}) }}
+					{{ form_errors(deleteAccountForm.password) }}
+				</div>
 
-					<button type="submit" data-delete-account-target="submitBtn" disabled class="w-full text-white rounded-lg py-2 font-semibold disabled:opacity-40 disabled:cursor-not-allowed" style="background-color: #A63328;">
-						Valider la suppression
-					</button>
+				<button type="submit" data-delete-account-target="submitBtn" disabled class="w-full text-white rounded-lg py-2 font-semibold disabled:opacity-40 disabled:cursor-not-allowed" style="background-color: #A63328;">
+					Valider la suppression
+				</button>
 
-					{{ form_end(deleteAccountForm) }}
-				</form>
+				{{ form_end(deleteAccountForm) }}
 			</div>
 
 		</div>

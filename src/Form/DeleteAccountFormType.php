@@ -15,11 +15,11 @@ class DeleteAccountFormType extends AbstractType
             ->add('password', PasswordType::class, [
                 'label' => 'Confirmez avec votre mot de passe',
                 'mapped' => false,
+                'required' => false,
                 'attr' => ['placeholder' => 'Mot de passe...'],
                 'constraints' => [
                     new NotBlank(message: 'Veuillez entrer votre mot de passe pour confirmer'),
                 ],
-            ])
-        ;
+            ]);
     }
 }
