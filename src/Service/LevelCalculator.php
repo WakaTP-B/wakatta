@@ -26,11 +26,18 @@ class LevelCalculator
             $xpStep += $levelSettings->getIncrement();
         }
 
-        $xpCurrentLevel = $xp - $xpCurrentLevelStart;
+        // Plancher XP : ne peut pas descendre en dessous du debut du niveau actuel
+        // Un niveau acquis ne se perd pas, seule la progression dans le niveau diminue
+        $xpEffective = max($xp, $xpCurrentLevelStart);
+
+        $xpCurrentLevel = $xpEffective - $xpCurrentLevelStart;
         $xpNextLevel = $xpRequired - $xpCurrentLevelStart;
         $percent = $xpNextLevel > 0
             ? (int) round(($xpCurrentLevel / $xpNextLevel) * 100)
             : 100;
+
+        // Securite anti-dépassement
+        $percent = max(0, min(100, $percent));
 
         return [
             'level' => $level,

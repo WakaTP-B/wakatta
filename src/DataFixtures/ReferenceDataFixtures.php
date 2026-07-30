@@ -53,11 +53,11 @@ class ReferenceDataFixtures extends Fixture
             $activityEntities[$key] = $activity;
         }
 
-        // XpRule
+        // XpRule (-2 / -4 / -8) => 0
         $baremes = [
-            'facile' => ['success' => 5, 'failure' => -2],
-            'moyen' => ['success' => 10, 'failure' => -4],
-            'difficile' => ['success' => 15, 'failure' => -8],
+            'facile' => ['success' => 5, 'failure' => 0],
+            'moyen' => ['success' => 10, 'failure' => 0],
+            'difficile' => ['success' => 15, 'failure' => 0],
         ];
 
         // // XpRule — QCM et Complétion
