@@ -6,7 +6,7 @@ export default class extends Controller {
 
     // Switch open/close du drawer
     toggle() {
-        if (this.drawerTarget.classList.contains('hidden')) {
+        if (this.drawerTarget.classList.contains('invisible')) {
             this.open()
         } else {
             this.close()
@@ -15,7 +15,7 @@ export default class extends Controller {
 
     open() {
         // Display drawer + backdrop, switch burger -> croix
-        this.drawerTarget.classList.remove('hidden')
+        this.drawerTarget.classList.remove('invisible')
         this.backdropTarget.classList.remove('hidden')
         this.iconOpenTarget.classList.add('hidden')
         this.iconCloseTarget.classList.remove('hidden')
@@ -35,7 +35,7 @@ export default class extends Controller {
 
         // Attend la fin réelle de la transition avant de cacher le drawer
         this.drawerTarget.addEventListener('transitionend', () => {
-            this.drawerTarget.classList.add('hidden')
+            this.drawerTarget.classList.add('invisible')
         }, { once: true })
     }
 }
