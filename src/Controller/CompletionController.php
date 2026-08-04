@@ -27,9 +27,6 @@ final class CompletionController extends AbstractController
         VocabularyRepository $vocabularyRepository,
     ): Response {
         $levelParam = $request->query->get('level');
-        $sessionIdParam = $request->query->get('session');
-        $wordIdParam = $request->query->get('word');
-        $choicesParam = $request->query->get('choices');
 
         try {
             $difficulty = DifficultyLevel::from($levelParam);
@@ -39,18 +36,27 @@ final class CompletionController extends AbstractController
             return $this->redirectToRoute('app_dashboard');
         }
 
+        $httpSession = $request->getSession();
+
+        $sessionIdParam = $httpSession->get('completion_active_session_id');
+
         $session = $sessionIdParam !== null
             ? $sessionManager->findOngoingSession((int) $sessionIdParam, $this->getUser())
             : null;
 
         if ($session === null) {
             $session = $sessionManager->createSession($this->getUser());
+            $httpSession->set('completion_active_session_id', $session->getId());
         }
 
-        if ($wordIdParam !== null && $choicesParam !== null) {
-            $vocabulary = $vocabularyRepository->find((int) $wordIdParam);
-            $choiceIds = array_map('intval', explode(',', $choicesParam));
-            $question = $vocabulary ? $completionGenerator->buildQuestionFromFixedChoices($vocabulary, $difficulty, $choiceIds) : null;
+        $sessionKey = 'completion_question_' . $session->getId();
+        $storedQuestion = $httpSession->get($sessionKey);
+
+        if ($storedQuestion !== null) {
+            $vocabulary = $vocabularyRepository->find($storedQuestion['wordId']);
+            $question = $vocabulary
+                ? $completionGenerator->buildQuestionFromFixedChoices($vocabulary, $difficulty, $storedQuestion['choiceIds'])
+                : null;
         } else {
             $excludedIds = $activityLogRepository->findVocabularyIdsForSession($session);
             $question = $completionGenerator->generateQuestion($difficulty, $excludedIds);
@@ -58,11 +64,13 @@ final class CompletionController extends AbstractController
             if ($question) {
                 $choiceIds = array_map(fn($h) => $h->getId(), $question->choices);
 
+                $httpSession->set($sessionKey, [
+                    'wordId' => $question->vocabulary->getId(),
+                    'choiceIds' => $choiceIds,
+                ]);
+
                 return $this->redirectToRoute('app_activity_completion', [
                     'level' => $difficulty->value,
-                    'session' => $session->getId(),
-                    'word' => $question->vocabulary->getId(),
-                    'choices' => implode(',', $choiceIds),
                 ]);
             }
         }
@@ -109,6 +117,7 @@ final class CompletionController extends AbstractController
             session: $session,
         );
 
+        $request->getSession()->remove('completion_question_' . $session->getId());
         $sessionManager->closeSessionIfComplete($session);
 
         return $this->render('activity/completion/_result_modal.html.twig', [

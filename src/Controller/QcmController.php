@@ -27,9 +27,6 @@ final class QcmController extends AbstractController
         VocabularyRepository $vocabularyRepository,
     ): Response {
         $levelParam = $request->query->get('level');
-        $sessionIdParam = $request->query->get('session');
-        $wordIdParam = $request->query->get('word');
-        $choicesParam = $request->query->get('choices');
 
         try {
             $difficulty = DifficultyLevel::from($levelParam);
@@ -39,34 +36,41 @@ final class QcmController extends AbstractController
             return $this->redirectToRoute('app_dashboard');
         }
 
-        // Continue la session si id transmis via l'URL
-        // (via le lien "Suivant") - sinon nouvelle session
+        $httpSession = $request->getSession();
+
+        // On stocke l'ID de la session en cours dans la session HTTP, pour pouvoir retrouver la session côté serveur
+        $sessionIdParam = $httpSession->get('qcm_active_session_id');
+
         $session = $sessionIdParam !== null
             ? $qcmSessionManager->findOngoingSession((int) $sessionIdParam, $this->getUser())
             : null;
 
         if ($session === null) {
             $session = $qcmSessionManager->createSession($this->getUser());
+            $httpSession->set('qcm_active_session_id', $session->getId());
         }
 
-        // Si le mot ET les choix sont déjà fixés dans l'URL (rechargement de page),
-        // on reconstruit la même question à l'identique - rien ne doit changer au F5
-        if ($wordIdParam !== null && $choicesParam !== null) {
-            $vocabulary = $vocabularyRepository->find((int) $wordIdParam);
-            $choices = explode(',', $choicesParam);
-            $question = $vocabulary ? $qcmGenerator->buildQuestionFromFixedChoices($vocabulary, $difficulty, $choices) : null;
+        // Le mot et les choix figés sont eux aussi stockés côté serveur
+        $sessionKey = 'qcm_question_' . $session->getId();
+        $storedQuestion = $httpSession->get($sessionKey);
+
+        if ($storedQuestion !== null) {
+            $vocabulary = $vocabularyRepository->find($storedQuestion['wordId']);
+            $question = $vocabulary
+                ? $qcmGenerator->buildQuestionFromFixedChoices($vocabulary, $difficulty, $storedQuestion['choices'])
+                : null;
         } else {
-            // On récupère les mots déjà posés dans cette session, pour ne pas les reposer
             $excludedIds = $activityLogRepository->findVocabularyIdsForSession($session);
             $question = $qcmGenerator->generateQuestion($difficulty, $excludedIds);
 
             if ($question) {
-                // On fixe le mot ET les choix dans l'URL, pour que les futurs relodads réaffichent exactement la même question (mot + distracteurs).
+                $httpSession->set($sessionKey, [
+                    'wordId' => $question->vocabulary->getId(),
+                    'choices' => $question->choices,
+                ]);
+
                 return $this->redirectToRoute('app_activity_vocabulaire', [
                     'level' => $difficulty->value,
-                    'session' => $session->getId(),
-                    'word' => $question->vocabulary->getId(),
-                    'choices' => implode(',', $question->choices),
                 ]);
             }
         }
@@ -112,6 +116,10 @@ final class QcmController extends AbstractController
             submittedAnswer: $submittedAnswer,
             session: $session,
         );
+
+        // La question est répondue : on retire son état figé de la session HTTP,
+        // pour que le prochain GET /vocabulaire en génère une nouvelle plutôt que de rejouer celle-ci.
+        $request->getSession()->remove('qcm_question_' . $session->getId());
 
         // On check si la session est terminée (le récap s'affichera au clic sur "Suivant")
         $sessionManager->closeSessionIfComplete($session);

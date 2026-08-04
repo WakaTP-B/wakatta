@@ -27,8 +27,6 @@ final class AssemblageController extends AbstractController
         XpTransactionRepository $xpTransactionRepository,
     ): Response {
         $levelParam = $request->query->get('level');
-        $sessionIdParam = $request->query->get('session');
-        $tilesParam = $request->query->get('tiles');
 
         try {
             $difficulty = DifficultyLevel::from($levelParam);
@@ -38,8 +36,12 @@ final class AssemblageController extends AbstractController
             return $this->redirectToRoute('app_dashboard');
         }
 
-        // Grille + session deja fixees dans l'URL (F5) -> rebuild a l'identique
-        if ($sessionIdParam !== null && $tilesParam !== null) {
+        $httpSession = $request->getSession();
+
+        $sessionIdParam = $httpSession->get('assemblage_active_session_id');
+        $storedGrid = $sessionIdParam !== null ? $httpSession->get('assemblage_grid_' . $sessionIdParam) : null;
+
+        if ($sessionIdParam !== null && $storedGrid !== null) {
             $session = $sessionManager->findOngoingSession((int) $sessionIdParam, $this->getUser());
 
             if ($session === null) {
@@ -51,14 +53,16 @@ final class AssemblageController extends AbstractController
             if ($elapsedSeconds >= self::TIMER_SESSION_ASSEMBLAGE) {
                 $sessionManager->closeSessionAndSaveTotalXp($session, $xpTransactionRepository);
 
+                $httpSession->remove('assemblage_active_session_id');
+                $httpSession->remove('assemblage_grid_' . $session->getId());
+
                 return $this->redirectToRoute('app_activity_assemblage_recap', [
                     'session' => $session->getId(),
                     'difficulty' => $difficulty->value,
                 ]);
             }
 
-            $tileIds = array_map('intval', explode(',', $tilesParam));
-            $grid = $assemblageGenerator->buildGridFromFixedTiles($difficulty, $tileIds);
+            $grid = $assemblageGenerator->buildGridFromFixedTiles($difficulty, $storedGrid);
 
             // Temps restant reel, evite de reset le timer au F5
             $remainingSeconds = self::TIMER_SESSION_ASSEMBLAGE - $elapsedSeconds;
@@ -72,7 +76,7 @@ final class AssemblageController extends AbstractController
             ]);
         }
 
-        // New session + nouvelle grille, on fixe tout dans l'URL
+        // Nouvelle session + nouvelle grille, fixees en session HTTP
         $grid = $assemblageGenerator->generateGrid($difficulty);
 
         if ($grid === null) {
@@ -84,10 +88,11 @@ final class AssemblageController extends AbstractController
         $session = $sessionManager->createSession($this->getUser());
         $tileIds = array_map(fn($hiragana) => $hiragana->getId(), $grid->tiles);
 
+        $httpSession->set('assemblage_active_session_id', $session->getId());
+        $httpSession->set('assemblage_grid_' . $session->getId(), $tileIds);
+
         return $this->redirectToRoute('app_activity_assemblage', [
             'level' => $difficulty->value,
-            'session' => $session->getId(),
-            'tiles' => implode(',', $tileIds),
         ]);
     }
 
@@ -144,6 +149,9 @@ final class AssemblageController extends AbstractController
 
         // Cloture session (timer expiré), calcul Xp total, redirect to recap
         $sessionManager->closeSessionAndSaveTotalXp($session, $xpTransactionRepository);
+
+        $request->getSession()->remove('assemblage_active_session_id');
+        $request->getSession()->remove('assemblage_grid_' . $session->getId());
 
         return $this->redirectToRoute('app_activity_assemblage_recap', [
             'session' => $session->getId(),

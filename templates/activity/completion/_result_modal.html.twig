@@ -29,7 +29,7 @@
 				Suivant
 			</a>
 		{% else %}
-			<a href="{{ path('app_activity_completion', {level: difficulty.value, session: session.id}) }}" data-turbo-frame="_top" class="btn inline-block">
+			<a href="{{ path('app_activity_completion', {level: difficulty.value}) }}" data-turbo-frame="_top" class="btn inline-block">
 				Suivant
 			</a>
 		{% endif %}
