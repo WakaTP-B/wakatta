@@ -61,25 +61,25 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         // QCM Facile, réussi, +5
         $this->createActivityLog($manager, $ironRam, $qcm, $facile,
-            $this->getReference('vocabulary-neko', Vocabulary::class), 'correct', 5, null);
+            $this->getReference('vocabulary-neko', Vocabulary::class), 'success', 5, null);
 
         // QCM Moyen, réussi, +10
         $this->createActivityLog($manager, $ironRam, $qcm, $moyen,
-            $this->getReference('vocabulary-sakana', Vocabulary::class), 'correct', 10, null);
+            $this->getReference('vocabulary-sakana', Vocabulary::class), 'success', 10, null);
 
         // QCM Difficile, raté, -0
         $this->createActivityLog($manager, $ironRam, $qcm, $difficile,
-            $this->getReference('vocabulary-sakura', Vocabulary::class), 'incorrect', 0, null);
+            $this->getReference('vocabulary-sakura', Vocabulary::class), 'failure', 0, null);
 
         // Calligraphie, success
-        $this->createActivityLog($manager, $ironRam, $calligraphie, null, null, 'success', 4, null);
+        $this->createActivityLog($manager, $ironRam, $calligraphie, null, null, 'reussi', 4, null);
 
         // Calligraphie, moyen
         $this->createActivityLog($manager, $ironRam, $calligraphie, null, null, 'medium', 2, null);
 
         // Complétion Facile, réussi, +5
         $this->createActivityLog($manager, $ironRam, $completion, $facile,
-            $this->getReference('vocabulary-hana', Vocabulary::class), 'correct', 5, null);
+            $this->getReference('vocabulary-hana', Vocabulary::class), 'success', 5, null);
 
         // Une Session Assemblage
         $session = new Session();
@@ -89,10 +89,10 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($session);
 
         $this->createActivityLog($manager, $ironRam, $assemblage, $moyen,
-            $this->getReference('vocabulary-kuruma', Vocabulary::class), 'correct', 10, $session);
+            $this->getReference('vocabulary-kuruma', Vocabulary::class), 'success', 10, $session);
 
         $this->createActivityLog($manager, $ironRam, $assemblage, $facile,
-            $this->getReference('vocabulary-neko', Vocabulary::class), 'correct', 5, $session);
+            $this->getReference('vocabulary-neko', Vocabulary::class), 'success', 5, $session);
 
         $session->setTotalXp(15);
 
