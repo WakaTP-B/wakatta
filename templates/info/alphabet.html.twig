@@ -7,7 +7,7 @@
 	<p class="text-encre/50 text-sm font-semibold uppercase tracking-wide mb-1">Hiragana</p>
 	<h1 class="titre-page">Alphabet</h1>
 
-	<div class="grid grid-cols-5 gap-2 mb-6">
+	<div class="grid grid-cols-5 gap-2 mb-6 md:max-w-xs md:mx-auto">
 		{% for row in grid %}
 			{% for romaji in row %}
 				{% if romaji is not null and hiraganaByRomaji[romaji] is defined %}

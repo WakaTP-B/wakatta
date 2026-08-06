@@ -5,10 +5,17 @@
 {% endblock %}
 
 {% block body %}
-	<p class="text-encre/50 text-sm font-semibold uppercase tracking-wide mb-1">Hiragana</p>
-	<h1 class="titre-page">Calligraphie</h1>
+	<div class="flex items-center justify-between mb-1">
+		<div>
+			<p class="text-encre/50 text-sm font-semibold uppercase tracking-wide mb-1">Hiragana</p>
+			<h1 class="titre-page">Calligraphie</h1>
+		</div>
+		<a href="{{ path('app_activity_calligraphie_aleatoire') }}" class="btn shrink-0 hidden md:inline-block">
+			Aléatoire
+		</a>
+	</div>
 
-	<div class="grid grid-cols-5 gap-2 mb-6">
+	<div class="grid grid-cols-5 gap-2 mb-6 md:max-w-xs md:mx-auto">
 		{% for row in grid %}
 			{% for romaji in row %}
 				{% if romaji is not null and hiraganaByRomaji[romaji] is defined %}
@@ -23,7 +30,7 @@
 		{% endfor %}
 	</div>
 
-	<a href="{{ path('app_activity_calligraphie_aleatoire') }}" class="btn w-full block text-center">
+	<a href="{{ path('app_activity_calligraphie_aleatoire') }}" class="btn w-full block text-center md:hidden">
 		Aléatoire
 	</a>
 {% endblock %}

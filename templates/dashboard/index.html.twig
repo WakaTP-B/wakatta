@@ -21,7 +21,7 @@
         } %}
 		</section>
 
-		<section class="space-y-4">
+		<section class="grid grid-cols-1 md:grid-cols-2 gap-4">
 			{% for module in modules %}
 				{% if module.availableDifficulties is not empty %}
 					<button type="button" class="block w-full text-left bg-white rounded-lg overflow-hidden shadow-sm border border-gris-pierre" data-action="click->level-select#open" data-level-select-route-param="{{ path(module.route) }}" data-level-select-label-param="{{ module.label }}" data-level-select-available-param="{{ module.availableDifficulties|json_encode }}">
