@@ -4,27 +4,38 @@
 {# Drawer #}
 <div data-menu-target="drawer" class="invisible opacity-0 -translate-y-4 fixed top-16 left-1/2 -translate-x-1/2 w-full max-w-sm bg-beige-washi z-50 flex flex-col pb-4 transition-all duration-500">
 
-
 	<nav class="flex flex-col gap-2 px-4 pt-4 divide-y divide-gris-pierre border-b border-gris-pierre">
 
-		<a href="{{ path('app_dashboard') }}" class="h-12.25 flex items-center justify-center text-encre font-bold">
-			Dashboard
-		</a>
+		{% if app.user %}
+			<a href="{{ path('app_dashboard') }}" class="h-12.25 flex items-center justify-center text-encre font-bold">
+				Dashboard
+			</a>
 
-		<a href="{{ path('app_info_alphabet')}}" class="h-12.25 flex items-center justify-center text-encre font-bold">
-			Alphabet Hiragana
-		</a>
+			<a href="{{ path('app_info_alphabet')}}" class="h-12.25 flex items-center justify-center text-encre font-bold">
+				Alphabet Hiragana
+			</a>
 
-		<a href="{{ path('app_profile')}}" class="h-12.25 flex items-center justify-center text-encre font-bold">
-			Profil
+			<a href="{{ path('app_profile')}}" class="h-12.25 flex items-center justify-center text-encre font-bold">
+				Profil
+			</a>
+
+		{% else %}
+			<a href="{{ path('app_login') }}" class="h-12.25 flex items-center justify-center text-encre font-bold">
+				Se connecter
+			</a>
+		{% endif %}
+
+		<a href="{{ path('app_info_mentions')}}" class="h-12.25 flex items-center justify-center text-encre font-bold">
+			Mentions légales
 		</a>
 
 	</nav>
 
-
-	<a href="{{ path('app_logout') }}" class="h-12.25 flex items-center justify-center text-rouge-torii mt-8 px-4 font-bold border-t border-gris-pierre pt-4">
-		Déconnexion
-	</a>
+	{% if app.user %}
+		<a href="{{ path('app_logout') }}" class="h-12.25 flex items-center justify-center text-rouge-torii mt-8 px-4 font-bold border-t border-gris-pierre pt-4">
+			Déconnexion
+		</a>
+	{% endif %}
 
 
 </div>

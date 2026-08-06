@@ -38,4 +38,10 @@ final class InfoController extends AbstractController
             'hiraganaByRomaji' => $hiraganaByRomaji,
         ]);
     }
+
+    #[Route('/mentions-legales', name: 'app_info_mentions')]
+    public function mentions(): Response
+    {
+        return $this->render('info/mentions.html.twig');
+    }
 }

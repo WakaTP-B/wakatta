@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mentions légales - Wakatta!
+{% endblock %}
+
+{% block body %}
+	<button type="button" onclick="history.back()" class="text-sm text-encre/60 mb-4">
+		← Retour
+	</button>
+	<h1 class="titre-page mb-4">Mentions légales</h1>
+
+	<div class="space-y-6 text-sm text-encre">
+		<section>
+			<h2 class="titre-section mb-1">Éditeur du site</h2>
+			<p>Wakatta! est édité par Amaury Courcelles, dans le cadre d'un projet de formation DWWM.</p>
+			<p>Contact : amaury.courcelles@laplateforme.io</p>
+		</section>
+
+		<section>
+			<h2 class="titre-section mb-1">Hébergement</h2>
+			<p>Projet non déployé publiquement, hébergement local pour le moment.</p>
+		</section>
+
+		<section>
+			<h2 class="titre-section mb-1">Données personnelles</h2>
+			<p>Les données saisies (email, mot de passe, historique de progression) sont utilisées uniquement pour le fonctionnement de l'application. Le mot de passe est stocké de façon chiffrée (hachage bcrypt). Conformément au RGPD, chaque utilisateur peut supprimer définitivement son compte et l'ensemble de ses données depuis sa page de profil.</p>
+		</section>
+
+		<section>
+			<h2 class="titre-section mb-1">Propriété intellectuelle</h2>
+			<p>Le code source de Wakatta! est disponible publiquement sur GitHub. Les contenus pédagogiques (vocabulaire, hiragana) proviennent de ressources publiques japonaises et ne font l'objet d'aucun droit exclusif.</p>
+		</section>
+	</div>
+{% endblock %}
