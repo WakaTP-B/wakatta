@@ -67,9 +67,9 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $this->createActivityLog($manager, $ironRam, $qcm, $moyen,
             $this->getReference('vocabulary-sakana', Vocabulary::class), 'correct', 10, null);
 
-        // QCM Difficile, raté, -8
+        // QCM Difficile, raté, -0
         $this->createActivityLog($manager, $ironRam, $qcm, $difficile,
-            $this->getReference('vocabulary-sakura', Vocabulary::class), 'incorrect', -8, null);
+            $this->getReference('vocabulary-sakura', Vocabulary::class), 'incorrect', 0, null);
 
         // Calligraphie, success
         $this->createActivityLog($manager, $ironRam, $calligraphie, null, null, 'success', 4, null);
