@@ -39,7 +39,7 @@ final class QcmController extends AbstractController
         $httpSession = $request->getSession();
 
         // On stocke l'ID de la session en cours dans la session HTTP, pour pouvoir retrouver la session côté serveur
-        $sessionIdParam = $httpSession->get('qcm_active_session_id');
+        $sessionIdParam = $httpSession->get('qcm_active_session_id_' . $difficulty->value);
 
         $session = $sessionIdParam !== null
             ? $qcmSessionManager->findOngoingSession((int) $sessionIdParam, $this->getUser())
@@ -47,11 +47,11 @@ final class QcmController extends AbstractController
 
         if ($session === null) {
             $session = $qcmSessionManager->createSession($this->getUser());
-            $httpSession->set('qcm_active_session_id', $session->getId());
+            $httpSession->set('qcm_active_session_id_' . $difficulty->value, $session->getId());
         }
 
         // Le mot et les choix figés sont eux aussi stockés côté serveur
-        $sessionKey = 'qcm_question_' . $session->getId();
+        $sessionKey = 'qcm_question_' . $session->getId() . '_' . $difficulty->value;
         $storedQuestion = $httpSession->get($sessionKey);
 
         if ($storedQuestion !== null) {
@@ -119,7 +119,7 @@ final class QcmController extends AbstractController
 
         // La question est répondue : on retire son état figé de la session HTTP,
         // pour que le prochain GET /vocabulaire en génère une nouvelle plutôt que de rejouer celle-ci.
-        $request->getSession()->remove('qcm_question_' . $session->getId());
+        $request->getSession()->remove('qcm_question_' . $session->getId() . '_' . $difficulty->value);
 
         // On check si la session est terminée (le récap s'affichera au clic sur "Suivant")
         $sessionManager->closeSessionIfComplete($session);
